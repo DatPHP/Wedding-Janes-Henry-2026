@@ -5,16 +5,26 @@ export default function AdminPage() {
   const [data, setData] = useState<any[]>([]);
 
   useEffect(() => {
-    fetch("/api/admin/forms")
-      .then(res => res.json())
-      .then(setData);
-  }, []);
-
-  useEffect(() => {
     const token = localStorage.getItem("admin_token");
+  
     if (!token) {
       window.location.href = "/admin/login";
+      return;
     }
+  
+    fetch("/api/admin/forms", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then(res => {
+        if (res.status === 401) {
+          window.location.href = "/admin/login";
+          return;
+        }
+        return res.json();
+      })
+      .then(setData);
   }, []);
   
 
