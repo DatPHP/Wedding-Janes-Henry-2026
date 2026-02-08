@@ -16,7 +16,7 @@ export async function GET(req: Request) {
       attendance,
       message,
       submitted_at
-    FROM wedding_forms
+    FROM wedding_guests
     ORDER BY submitted_at DESC
   `;
 
