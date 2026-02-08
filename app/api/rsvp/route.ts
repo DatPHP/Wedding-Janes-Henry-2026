@@ -6,6 +6,13 @@ export async function POST(req: Request) {
     const { name, phone, relationship, message, attendance } =
       await req.json();
 
+    if (!/^[0-9+ ]{8,15}$/.test(phone)) {
+    return NextResponse.json(
+        { error: "Invalid phone number" },
+        { status: 400 }
+    );
+    }
+
     if (!name || !phone || !relationship || !attendance) {
       return NextResponse.json(
         { error: "Missing required fields" },
