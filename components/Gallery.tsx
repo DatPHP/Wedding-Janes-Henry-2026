@@ -35,9 +35,9 @@ export default function Gallery() {
     }, [emblaApi])
 
     return (
-        <section className="py-20 px-6 bg-stone-50">
+        <section className="py-24 px-6 bg-gradient-to-b from-background to-[#FFF5F5]">
             <div className="max-w-6xl mx-auto">
-                <h2 className="text-4xl md:text-5xl font-serif text-center mb-12 text-stone-800">
+                <h2 className="text-4xl md:text-5xl font-serif text-center mb-16 text-foreground">
                     Memories
                 </h2>
                 

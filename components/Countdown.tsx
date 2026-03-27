@@ -39,21 +39,21 @@ export default function Countdown() {
     }, []);
 
     return (
-        <section className="py-20 bg-rose-50 text-center">
-            <h2 className="text-3xl font-serif mb-10">
-                Counting Down To Our Big Day
+        <section className="py-24 bg-gradient-to-b from-background to-[#FFF5F5] text-center px-4">
+            <h2 className="text-3xl md:text-5xl font-serif mb-16 text-foreground">
+                Countdown To Our Big Day
             </h2>
 
-            <div className="flex justify-center gap-6 flex-wrap">
+            <div className="flex justify-center gap-4 md:gap-8 flex-wrap max-w-4xl mx-auto">
                 {Object.entries(timeLeft).map(([label, value]) => (
                     <div
                         key={label}
-                        className="w-24 h-24 bg-white rounded-2xl shadow-md flex flex-col items-center justify-center"
+                        className="w-24 h-28 md:w-32 md:h-36 bg-white rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col items-center justify-center border border-accent/10 transition-transform duration-300 hover:-translate-y-2"
                     >
-                        <span className="text-3xl font-bold text-rose-600">
+                        <span className="text-4xl md:text-5xl font-serif text-accent mb-2">
                             {value}
                         </span>
-                        <span className="text-sm uppercase tracking-wide">
+                        <span className="text-xs md:text-sm uppercase tracking-widest text-muted font-medium">
                             {label}
                         </span>
                     </div>

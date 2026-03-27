@@ -1,24 +1,31 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #FDF8F5; /* Soft warm cream */
+  --foreground: #333333; /* Dark charcoal */
+  --muted: #666666; /* Medium gray */
+  --accent: #F373AC; /* Dusty pink/rose */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --font-sans: var(--font-inter), sans-serif;
+  --font-serif: var(--font-playfair), serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Keeping the wedding theme light generally, or adjusting dark mode to be deep burgundy/charcoal */
+    --background: #1a1515;
+    --foreground: #FDF8F5;
+    --muted: #a39999;
+    --accent: #F06292;
   }
 }
 
 body {
-  @apply bg-rose-50 text-rose-800;
+  @apply bg-background text-foreground transition-colors duration-300;
 }
