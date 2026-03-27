@@ -13,8 +13,8 @@ export default function EventInfo() {
                         <p className="font-medium text-foreground">06 December 2026</p>
                         <p>10:00 AM - 11:30 AM</p>
                         <div className="w-12 h-[1px] bg-accent/30 mx-auto"></div>
-                        <p className="font-medium text-foreground">St. Patrick's Cathedral</p>
-                        <p className="text-sm">5th Ave, New York, NY</p>
+                        <p className="font-medium text-foreground">Phu Cat, Binh Dinh</p>
+                        <p className="text-sm">Janes's hometown</p>
                     </div>
                 </div>
 
@@ -25,8 +25,8 @@ export default function EventInfo() {
                         <p className="font-medium text-foreground">06 December 2026</p>
                         <p>6:00 PM - Late</p>
                         <div className="w-12 h-[1px] bg-accent/30 mx-auto"></div>
-                        <p className="font-medium text-foreground">The Plaza Hotel</p>
-                        <p className="text-sm">768 5th Ave, New York, NY</p>
+                        <p className="font-medium text-foreground">Thuan An, Binh Duong</p>
+                        <p className="text-sm">Henry's hometown</p>
                     </div>
                 </div>
             </div>

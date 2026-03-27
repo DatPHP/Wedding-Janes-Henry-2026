@@ -3,17 +3,26 @@ export default function Story() {
         {
             year: "2024",
             title: "First Meet",
-            desc: "We met for the first time at a small cafe in Saigon",
+            desc: "We met for the first time at a small BBQ restaurant in Thuan An, Binh Duong",
         },
         {
-            year: "2025",
+            year: "2024",
             title: "First Date",
             desc: "Our first date in Thuan An",
         },
         {
+            year: "2024",
+            title: "The day of the proposal",
+            desc: "Our first date in Thuan An",
+        },
+        {
+            year: "2025",
+            title: "Our first trip abroad",
+            desc: "Celebrating the New Year together and exploring Kuala Lumpur",
+        }, {
             year: "2026",
-            title: "Proposal",
-            desc: "He proposed during our ",
+            title: "Hue - Da Nang - Hoi An trip",
+            desc: "Let's me think....",
         },
         {
             year: "2026",
