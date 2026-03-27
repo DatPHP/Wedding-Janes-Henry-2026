@@ -10,9 +10,9 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <Story />
       <Countdown />
       <Gallery />
+      <Story />
       <RsvpForm />
       <EventInfo />
       <Footer />

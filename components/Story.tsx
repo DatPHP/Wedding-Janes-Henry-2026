@@ -13,7 +13,7 @@ export default function Story() {
         {
             year: "2026",
             title: "Proposal",
-            desc: "He proposed during our trip to Da Nang - Hue - Hoi An",
+            desc: "He proposed during our ",
         },
         {
             year: "2026",
@@ -34,7 +34,7 @@ export default function Story() {
                     <div key={index} className="relative pl-8 md:pl-12 group">
                         {/* Timeline Node */}
                         <div className="absolute -left-[9px] top-2 w-4 h-4 rounded-full bg-accent ring-4 ring-white shadow-sm transition-transform duration-300 group-hover:scale-125"></div>
-                        
+
                         <div className="bg-white p-6 md:p-8 rounded-2xl md:rounded-[32px] shadow-[0_4px_20px_rgb(0,0,0,0.03)] border border-accent/5 transition-transform duration-300 hover:-translate-y-1">
                             <span className="text-accent font-serif text-xl md:text-2xl mb-2 block font-medium">
                                 {item.year}
