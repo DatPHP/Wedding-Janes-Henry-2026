@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { Heart, X } from "lucide-react";
 
 export default function RsvpForm() {
   const [form, setForm] = useState({
@@ -45,8 +47,8 @@ export default function RsvpForm() {
   };
 
   return (
-    <section className="py-24 px-6 bg-[#FFF5F5]">
-      <div className="max-w-xl mx-auto bg-white p-8 md:p-12 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-accent/10">
+    <section className="py-24 px-6 bg-[#FFF5F5] relative">
+      <div className="max-w-xl mx-auto bg-white p-8 md:p-12 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-accent/10 relative z-10">
         <h2 className="text-3xl md:text-5xl font-serif text-center mb-8 text-foreground">
           Send Your Wishes
         </h2>
@@ -142,14 +144,48 @@ export default function RsvpForm() {
           >
             {loading ? "Sending..." : "Confirm RSVP"}
           </button>
-
-          {success && (
-            <div className="mt-4 p-4 bg-green-50 text-green-700 rounded-2xl text-center border border-green-100">
-              Thank you! Your RSVP has been received. 🤍
-            </div>
-          )}
         </form>
       </div>
+
+      <AnimatePresence>
+        {success && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSuccess(false)}
+                className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+            />
+            <motion.div 
+                initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                className="bg-white p-10 md:p-14 rounded-[32px] shadow-2xl relative z-10 max-w-md w-full border border-accent/10 text-center"
+            >
+                <button 
+                    onClick={() => setSuccess(false)}
+                    className="absolute top-6 right-6 text-muted hover:text-foreground transition-colors bg-background rounded-full p-2"
+                >
+                    <X size={20} />
+                </button>
+                
+                <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Heart className="text-accent fill-accent animate-pulse" size={32} />
+                </div>
+
+                <h3 className="text-3xl font-serif text-accent mb-4">Thank You!</h3>
+                <p className="text-lg text-muted mb-8">
+                  Your response has been received. We are so grateful for your love and support!
+                </p>
+
+                <p className="font-script text-2xl text-accent/80">
+                  With love, Janes & Henry
+                </p>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

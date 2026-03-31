@@ -11,25 +11,30 @@ export default function Hero() {
                 Janes & Henry
             </h1>
 
-            <div className="w-16 h-[1px] bg-accent/50 my-8 mx-auto"></div>
+            {/* Emotional Touch Quote */}
+            <p className="font-script text-3xl md:text-4xl text-accent/80 mt-2 mb-4">
+                "Two souls with but a single thought, two hearts that beat as one."
+            </p>
+
+            <div className="w-16 h-[1px] bg-accent/50 my-6 mx-auto"></div>
 
             <p className="text-xl md:text-2xl font-serif text-foreground/80 italic">
                 December 06, 2026
             </p>
 
-            <div className="mt-16 w-full max-w-lg mb-12">
+            <div className="mt-12 w-full max-w-lg mb-12">
                 <Image
                     src="/images/couple-1.jpg"
                     alt="Janes & Henry"
                     width={800}
                     height={1000}
-                    className="rounded-[32px] shadow-2xl shadow-accent/20 object-cover"
+                    className="rounded-[32px] shadow-[0_20px_50px_rgb(243,115,172,0.15)] object-cover"
                     priority
                 />
             </div>
             
             {/* Scroll Indicator */}
-            <div className="animate-bounce text-accent mt-8 mb-4">
+            <div className="animate-bounce text-accent mt-4 mb-4">
                 <svg className="w-6 h-6 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" /></svg>
             </div>
         </section>
