@@ -52,7 +52,7 @@ export default function RsvpForm() {
         <h2 className="text-3xl md:text-5xl font-serif text-center mb-8 text-foreground">
           Send Your Wishes
         </h2>
-        <p className="text-center text-muted mb-10">
+        <p className="text-center text-foreground/80 mb-10">
           We would be honored to have you celebrate our special day with us.
         </p>
 

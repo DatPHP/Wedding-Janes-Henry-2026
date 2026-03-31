@@ -17,7 +17,7 @@ export default function EventInfo() {
                 {/* Ceremony Card */}
                 <div className="bg-white p-10 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-accent/10 transition-transform duration-300 hover:-translate-y-2 flex flex-col h-full">
                     <h3 className="text-2xl font-serif text-accent mb-4">Ceremony</h3>
-                    <div className="space-y-4 text-muted flex-grow">
+                    <div className="space-y-4 text-foreground/70 flex-grow">
                         <p className="font-medium text-foreground">06 December 2026</p>
                         <p>10:00 AM - 11:30 AM</p>
                         <div className="w-12 h-[1px] bg-accent/30 mx-auto"></div>
@@ -32,7 +32,7 @@ export default function EventInfo() {
                 {/* Reception Card */}
                 <div className="bg-white p-10 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-accent/10 transition-transform duration-300 hover:-translate-y-2 flex flex-col h-full">
                     <h3 className="text-2xl font-serif text-accent mb-4">Reception</h3>
-                    <div className="space-y-4 text-muted flex-grow">
+                    <div className="space-y-4 text-foreground/70 flex-grow">
                         <p className="font-medium text-foreground">06 December 2026</p>
                         <p>6:00 PM - Late</p>
                         <div className="w-12 h-[1px] bg-accent/30 mx-auto"></div>

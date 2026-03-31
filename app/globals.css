@@ -2,8 +2,8 @@
 
 :root {
   --background: #FDF8F5; /* Soft warm cream */
-  --foreground: #333333; /* Dark charcoal */
-  --muted: #666666; /* Medium gray */
+  --foreground: #111111; /* Deeper charcoal for better readability */
+  --muted: #444444; /* Darker gray for better readability */
   --accent: #F373AC; /* Dusty pink/rose */
 }
 
