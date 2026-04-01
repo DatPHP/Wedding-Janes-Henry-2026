@@ -40,7 +40,7 @@ export default function Countdown() {
 
     return (
         <section className="py-24 bg-gradient-to-b from-background to-[#FFF5F5] text-center px-4">
-            <h2 className="text-3xl md:text-5xl font-serif mb-16 text-foreground">
+            <h2 className="text-3xl md:text-5xl font-serif mb-16 text-black">
                 Countdown To Our Big Day
             </h2>
 

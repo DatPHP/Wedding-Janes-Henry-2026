@@ -49,10 +49,10 @@ export default function RsvpForm() {
   return (
     <section className="py-24 px-6 bg-[#FFF5F5] relative">
       <div className="max-w-xl mx-auto bg-white p-8 md:p-12 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-accent/10 relative z-10">
-        <h2 className="text-3xl md:text-5xl font-serif text-center mb-8 text-foreground">
+        <h2 className="text-3xl md:text-5xl font-serif text-center mb-8 text-black">
           Send Your Wishes
         </h2>
-        <p className="text-center text-foreground/80 mb-10">
+        <p className="text-center text-black/80 mb-10">
           We would be honored to have you celebrate our special day with us.
         </p>
 
@@ -64,7 +64,7 @@ export default function RsvpForm() {
               value={form.name}
               onChange={handleChange}
               required
-              className="w-full bg-background/50 border border-muted/20 rounded-2xl px-6 py-4 outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all text-foreground"
+              className="w-full bg-background/50 border border-muted/20 rounded-2xl px-6 py-4 outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all text-black"
             />
           </div>
           <div>
@@ -75,7 +75,7 @@ export default function RsvpForm() {
               value={form.phone}
               onChange={handleChange}
               required
-              className="w-full bg-background/50 border border-muted/20 rounded-2xl px-6 py-4 outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all text-foreground"
+              className="w-full bg-background/50 border border-muted/20 rounded-2xl px-6 py-4 outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all text-black"
             />
           </div>
 
@@ -85,7 +85,7 @@ export default function RsvpForm() {
               value={form.relationship}
               onChange={handleChange}
               required
-              className="w-full bg-background/50 border border-muted/20 rounded-2xl px-6 py-4 outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all text-foreground appearance-none"
+              className="w-full bg-background/50 border border-muted/20 rounded-2xl px-6 py-4 outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all text-black appearance-none"
             >
               <option value="">Relationship</option>
               <option>Family</option>
@@ -102,7 +102,7 @@ export default function RsvpForm() {
               placeholder="A message for Janes & Henry..."
               value={form.message}
               onChange={handleChange}
-              className="w-full bg-background/50 border border-muted/20 rounded-2xl px-6 py-4 outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all min-h-[120px] text-foreground resize-none"
+              className="w-full bg-background/50 border border-muted/20 rounded-2xl px-6 py-4 outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all min-h-[120px] text-black resize-none"
             />
           </div>
 
@@ -119,7 +119,7 @@ export default function RsvpForm() {
                 onChange={handleChange}
                 className="hidden"
               />
-              <span className="text-foreground">Joyfully Accept</span>
+              <span className="text-black">Joyfully Accept</span>
             </label>
 
             <label className="flex items-center gap-3 cursor-pointer group">
@@ -134,7 +134,7 @@ export default function RsvpForm() {
                 onChange={handleChange}
                 className="hidden"
               />
-              <span className="text-foreground">Regretfully Decline</span>
+              <span className="text-black">Regretfully Decline</span>
             </label>
           </div>
 
@@ -165,7 +165,7 @@ export default function RsvpForm() {
             >
                 <button 
                     onClick={() => setSuccess(false)}
-                    className="absolute top-6 right-6 text-muted hover:text-foreground transition-colors bg-background rounded-full p-2"
+                    className="absolute top-6 right-6 text-muted hover:text-black transition-colors bg-background rounded-full p-2"
                 >
                     <X size={20} />
                 </button>

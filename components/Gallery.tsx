@@ -37,7 +37,7 @@ export default function Gallery() {
     return (
         <section className="py-24 px-6 bg-gradient-to-b from-background to-[#FFF5F5]">
             <div className="max-w-6xl mx-auto">
-                <h2 className="text-4xl md:text-5xl font-serif text-center mb-16 text-foreground">
+                <h2 className="text-4xl md:text-5xl font-serif text-center mb-16 text-black">
                     Memories
                 </h2>
                 

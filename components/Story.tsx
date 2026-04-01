@@ -35,7 +35,7 @@ export default function Story() {
         <section className="py-24 px-6 max-w-3xl mx-auto">
             <div className="text-center mb-16">
                 <h2 className="text-accent uppercase tracking-widest text-sm mb-4">Our Journey</h2>
-                <h3 className="text-4xl md:text-5xl font-serif text-foreground font-semibold">Our Love Journey</h3>
+                <h3 className="text-4xl md:text-5xl font-serif text-black font-semibold">Our Love Journey</h3>
             </div>
 
             <div className="relative border-l border-accent/30 ml-4 md:ml-8 space-y-12 pb-8">
@@ -48,7 +48,7 @@ export default function Story() {
                             <span className="text-accent font-serif text-xl md:text-2xl mb-2 block font-medium">
                                 {item.year}
                             </span>
-                            <h4 className="text-foreground text-xl md:text-2xl font-serif font-semibold mb-3">
+                            <h4 className="text-black text-xl md:text-2xl font-serif font-semibold mb-3">
                                 {item.title}
                             </h4>
                             <p className="text-muted leading-relaxed font-normal text-base md:text-lg">

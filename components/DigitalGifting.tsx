@@ -10,7 +10,7 @@ export default function DigitalGifting() {
     return (
         <section className="py-24 bg-[#FFF5F5] text-center px-6">
             <div className="max-w-2xl mx-auto">
-                <h2 className="text-3xl md:text-5xl font-serif mb-6 text-foreground">
+                <h2 className="text-3xl md:text-5xl font-serif mb-6 text-black">
                     Send Wishes & Gifts
                 </h2>
                 <p className="text-muted mb-10 text-lg">
@@ -44,7 +44,7 @@ export default function DigitalGifting() {
                         >
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="absolute top-6 right-6 text-muted hover:text-foreground transition-colors bg-background rounded-full p-2"
+                                className="absolute top-6 right-6 text-muted hover:text-black transition-colors bg-background rounded-full p-2"
                             >
                                 <X size={20} />
                             </button>
@@ -58,7 +58,7 @@ export default function DigitalGifting() {
                                     <div className="w-48 h-48 bg-gray-200 rounded-xl mb-4 flex items-center justify-center text-muted">
                                         <img src="/images/QR_banking_janes.jpg" alt="Janes's QR Code" />
                                     </div>
-                                    <p className="font-semibold text-foreground">Janes & Henry</p>
+                                    <p className="font-semibold text-black">Janes & Henry</p>
                                     <p className="text-sm text-muted">Asia Commercial Bank (ACB)</p>
                                     <p className="text-sm text-muted">4562587</p>
                                 </div>

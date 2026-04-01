@@ -31,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${playfair.variable} ${greatVibes.variable} font-sans antialiased bg-background text-foreground transition-colors duration-300`}
+        className={`${inter.variable} ${playfair.variable} ${greatVibes.variable} font-sans antialiased bg-background text-black transition-colors duration-300`}
       >
         {children}
       </body>

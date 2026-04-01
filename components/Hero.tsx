@@ -7,7 +7,7 @@ export default function Hero() {
                 We are getting married
             </h2>
             
-            <h1 className="text-6xl md:text-8xl font-serif text-foreground mb-4 font-light">
+            <h1 className="text-6xl md:text-8xl font-serif text-black mb-4 font-light">
                 Janes & Henry
             </h1>
 
@@ -18,7 +18,7 @@ export default function Hero() {
 
             <div className="w-16 h-[1px] bg-accent/50 my-6 mx-auto"></div>
 
-            <p className="text-xl md:text-2xl font-serif text-foreground/80 italic">
+            <p className="text-xl md:text-2xl font-serif text-black/80 italic">
                 December 06, 2026
             </p>
 
