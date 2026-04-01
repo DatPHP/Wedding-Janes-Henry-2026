@@ -15,15 +15,28 @@ export default function RsvpForm() {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (e.target.name === "phone") {
+      setPhoneError("");
+    }
   };
 
   const submitForm = async (e: React.FormEvent) => {
     e.preventDefault();
+    setPhoneError("");
+
+    // Phone validation: 10 digits, starts with 0
+    const phoneRegex = /^0\d{9}$/;
+    if (!phoneRegex.test(form.phone)) {
+      setPhoneError("Phone number must be 10 digits and begin with a zero.");
+      return;
+    }
+
     setLoading(true);
 
     const res = await fetch("/api/rsvp", {
@@ -75,8 +88,13 @@ export default function RsvpForm() {
               value={form.phone}
               onChange={handleChange}
               required
-              className="w-full bg-background/50 border border-muted/20 rounded-2xl px-6 py-4 outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all text-black"
+              className={`w-full bg-background/50 border rounded-2xl px-6 py-4 outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all text-black ${phoneError ? 'border-red-500' : 'border-muted/20'}`}
             />
+            {phoneError && (
+              <p className="text-red-500 text-xs mt-2 ml-2 font-medium">
+                {phoneError}
+              </p>
+            )}
           </div>
 
           <div>
