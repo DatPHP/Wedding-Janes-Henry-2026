@@ -59,8 +59,8 @@ export default function DigitalGifting() {
                                         <img src="/images/QR_banking_janes.jpg" alt="Janes's QR Code" />
                                     </div>
                                     <p className="font-semibold text-foreground">Janes & Henry</p>
-                                    <p className="text-sm text-muted">Bank Name: Asia Commercial Bank (ACB)</p>
-                                    <p className="text-sm text-muted">Account: 4562587</p>
+                                    <p className="text-sm text-muted">Asia Commercial Bank (ACB)</p>
+                                    <p className="text-sm text-muted">4562587</p>
                                 </div>
                             </div>
                             <p className="text-xs text-muted">With all our love and appreciation.</p>
