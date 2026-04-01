@@ -56,7 +56,7 @@ export default function DigitalGifting() {
                                 {/* Placeholder for absolute an actual Bank VietQR image */}
                                 <div className="text-center">
                                     <div className="w-48 h-48 bg-gray-200 rounded-xl mb-4 flex items-center justify-center text-muted">
-                                        <img src="/images/QR_banking_henry.jpg" alt="Henry's QR Code" />
+                                        <img src="/images/QR_banking_janes.jpg" alt="Janes's QR Code" />
                                     </div>
                                     <p className="font-semibold text-foreground">Janes & Henry</p>
                                     <p className="text-sm text-muted">Bank Name: ACB</p>
