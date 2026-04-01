@@ -1,15 +1,16 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Play, Pause, Music } from "lucide-react";
+import { Music, Disc } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function BackgroundMusic() {
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
     useEffect(() => {
-        // We use a beautiful but safe copyright-free or placeholder link for the demo
-        audioRef.current = new Audio("https://cdn.pixabay.com/download/audio/2022/02/07/audio_104e1374a4.mp3?filename=piano-moment-9835.mp3");
+        // Updated to leduong.mp3 as requested
+        audioRef.current = new Audio("/musics/leduong.mp3");
         audioRef.current.loop = true;
         audioRef.current.volume = 0.5;
 
@@ -27,7 +28,6 @@ export default function BackgroundMusic() {
         if (isPlaying) {
             audioRef.current.pause();
         } else {
-            // Attempt to play
             const playPromise = audioRef.current.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => console.log("Audio play failed:", error));
@@ -37,19 +37,49 @@ export default function BackgroundMusic() {
     };
 
     return (
-        <button
-            onClick={togglePlay}
-            className="fixed bottom-6 right-6 z-50 w-12 h-12 bg-white/90 backdrop-blur-sm rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-accent/20 flex flex-col items-center justify-center text-accent hover:scale-110 hover:bg-white transition-all group"
-            aria-label="Toggle background music"
-        >
-            <div className="absolute -top-1 -right-1">
-                <Music size={14} className={`text-accent opacity-50 ${isPlaying ? 'animate-bounce' : ''}`} />
-            </div>
-            {isPlaying ? (
-                <Pause size={20} className="fill-accent" />
-            ) : (
-                <Play size={20} className="fill-accent ml-1" />
-            )}
-        </button>
+        <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-center gap-2">
+            <button
+                onClick={togglePlay}
+                className="relative group flex items-center justify-center"
+                aria-label="Toggle background music"
+            >
+                {/* Vinyl Disc Styling */}
+                <motion.div
+                    animate={isPlaying ? { rotate: 360 } : { rotate: 0 }}
+                    transition={isPlaying ? { repeat: Infinity, duration: 4, ease: "linear" } : { duration: 0.5 }}
+                    className={`w-14 h-14 bg-[#111111] rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.3)] border-2 border-accent/20 flex items-center justify-center relative overflow-hidden transition-all group-hover:scale-110`}
+                >
+                    {/* Vinyl grooves effect */}
+                    <div className="absolute inset-0 border-[4px] border-white/5 rounded-full" />
+                    <div className="absolute inset-2 border-[1px] border-white/5 rounded-full" />
+                    <div className="absolute inset-4 border-[1px] border-white/5 rounded-full" />
+                    
+                    {/* Center Label */}
+                    <div className="w-4 h-4 bg-accent rounded-full border-2 border-[#111111] z-10 flex items-center justify-center">
+                        <div className="w-1 h-1 bg-white rounded-full" />
+                    </div>
+                </motion.div>
+
+                {/* Floating Note indicator when playing */}
+                <AnimatePresence>
+                    {isPlaying && (
+                        <motion.div 
+                            initial={{ y: 0, opacity: 0 }}
+                            animate={{ y: -20, opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            transition={{ repeat: Infinity, duration: 2, ease: "easeOut" }}
+                            className="absolute -top-4 right-0 pointer-events-none"
+                        >
+                            <Music size={14} className="text-accent" />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </button>
+            
+            {/* Minimal label (optional, can be removed for cleaner look) */}
+            <span className="text-[10px] uppercase tracking-widest text-muted font-medium bg-white/50 backdrop-blur-sm px-2 py-0.5 rounded-full border border-black/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                {isPlaying ? "Playing" : "Music"}
+            </span>
+        </div>
     );
 }
