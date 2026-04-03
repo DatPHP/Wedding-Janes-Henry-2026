@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display, Great_Vibes } from "next/font/google";
 import "./globals.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -34,6 +36,7 @@ export default function RootLayout({
         className={`${inter.variable} ${playfair.variable} ${greatVibes.variable} font-sans antialiased bg-background text-black transition-colors duration-300`}
       >
         {children}
+        <ToastContainer position="bottom-right" />
       </body>
     </html>
   );

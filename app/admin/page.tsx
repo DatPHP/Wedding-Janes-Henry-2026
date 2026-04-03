@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { Users, Image as ImageIcon, LogOut, Download, Trash2, UploadCloud, Loader2 } from "lucide-react";
+import { toast } from "react-toastify";
+
 
 type WeddingForm = {
     id: string;
@@ -108,16 +110,23 @@ export default function AdminPage() {
         formData.append("file", file);
 
         try {
-            await fetch("/api/admin/memories", {
+            const res = await fetch("/api/admin/memories", {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${localStorage.getItem("admin_token")}`,
                 },
                 body: formData,
             });
-            await fetchMemories();
+            
+            if (res.ok) {
+                toast.success("Photo uploaded successfully!");
+                await fetchMemories();
+            } else {
+                toast.error("Failed to upload photo.");
+            }
         } catch (error) {
             console.error("Upload failed", error);
+            toast.error("Network error. Upload failed.");
         } finally {
             setIsUploading(false);
             // Reset input
@@ -129,8 +138,10 @@ export default function AdminPage() {
         if (!confirm("Are you sure you want to permanently delete this photo?")) return;
 
         setDeletingId(id);
+        const loadingId = toast.loading("Deleting photo...");
+
         try {
-            await fetch("/api/admin/memories", {
+            const res = await fetch("/api/admin/memories", {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -138,9 +149,16 @@ export default function AdminPage() {
                 },
                 body: JSON.stringify({ id, imageUrl }),
             });
-            await fetchMemories();
+
+            if (res.ok) {
+                toast.update(loadingId, { render: "Photo deleted successfully!", type: "success", isLoading: false, autoClose: 3000 });
+                await fetchMemories();
+            } else {
+                toast.update(loadingId, { render: "Failed to delete photo.", type: "error", isLoading: false, autoClose: 3000 });
+            }
         } catch (error) {
             console.error("Delete failed", error);
+            toast.update(loadingId, { render: "Network error. Deletion failed.", type: "error", isLoading: false, autoClose: 3000 });
         } finally {
             setDeletingId(null);
         }

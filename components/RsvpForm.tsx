@@ -3,6 +3,17 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Heart, X } from "lucide-react";
+import { toast } from "react-toastify";
+import { z } from "zod";
+
+const rsvpSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  phone: z.string().regex(/^0\d{9}$/, "Phone number must be 10 digits and begin with a zero."),
+  relationship: z.string().min(1, "Relationship is required"),
+  message: z.string().optional().default(""),
+  attendance: z.string().min(1, "Attendance is required"),
+});
+
 
 export default function RsvpForm() {
   const [form, setForm] = useState({
@@ -15,45 +26,48 @@ export default function RsvpForm() {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [phoneError, setPhoneError] = useState("");
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    if (e.target.name === "phone") {
-      setPhoneError("");
-    }
   };
 
   const submitForm = async (e: React.FormEvent) => {
     e.preventDefault();
-    setPhoneError("");
 
-    // Phone validation: 10 digits, starts with 0
-    const phoneRegex = /^0\d{9}$/;
-    if (!phoneRegex.test(form.phone)) {
-      setPhoneError("Phone number must be 10 digits and begin with a zero.");
+    // Zod validation
+    const result = rsvpSchema.safeParse(form);
+    if (!result.success) {
+      toast.error(result.error.issues[0].message);
       return;
     }
 
     setLoading(true);
 
-    const res = await fetch("/api/rsvp", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-
-    if (res.ok) {
-      setSuccess(true);
-      setForm({
-        name: "",
-        phone: "",
-        relationship: "",
-        message: "",
-        attendance: "attend",
+    try {
+      const res = await fetch("/api/rsvp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
       });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        setSuccess(true);
+        setForm({
+          name: "",
+          phone: "",
+          relationship: "",
+          message: "",
+          attendance: "attend",
+        });
+      } else {
+        toast.error(data.error || "Submission failed. Please try again.");
+      }
+    } catch (error) {
+      toast.error("Network error. Please check your connection.");
     }
 
     setLoading(false);
@@ -88,13 +102,8 @@ export default function RsvpForm() {
               value={form.phone}
               onChange={handleChange}
               required
-              className={`w-full bg-background/50 border rounded-2xl px-6 py-4 outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all text-black ${phoneError ? 'border-red-500' : 'border-muted/20'}`}
+              className="w-full bg-background/50 border border-muted/20 rounded-2xl px-6 py-4 outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all text-black"
             />
-            {phoneError && (
-              <p className="text-red-500 text-xs mt-2 ml-2 font-medium">
-                {phoneError}
-              </p>
-            )}
           </div>
 
           <div>
