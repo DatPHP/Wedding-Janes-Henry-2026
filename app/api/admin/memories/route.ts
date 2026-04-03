@@ -1,6 +1,5 @@
+import { put } from "@vercel/blob";
 import { sql } from "@vercel/postgres";
-import { writeFile } from "fs/promises";
-import path from "path";
 
 export async function POST(req: Request) {
     try {
@@ -14,31 +13,32 @@ export async function POST(req: Request) {
         const file = formData.get("file") as File;
 
         if (!file) {
-            return new Response("No file", { status: 400 });
+            return new Response("No file uploaded", { status: 400 });
         }
 
-        // 🖼️ convert file
-        const bytes = await file.arrayBuffer();
-        const buffer = Buffer.from(bytes);
+        // 🚀 Upload lên Vercel Blob
+        const blob = await put(file.name, file, {
+            access: "public",
+        });
 
-        // 📁 đặt tên file
-        const fileName = `${Date.now()}-${file.name}`;
-        const filePath = path.join(process.cwd(), "public/images", fileName);
+        // 👉 blob.url là CDN URL
+        const imageUrl = blob.url;
 
-        // 💾 lưu vào public/images
-        await writeFile(filePath, buffer);
-
-        const imageUrl = `/images/${fileName}`;
-
-        // 🗄️ lưu DB
+        // 🗄️ Lưu vào Postgres (Neon)
         await sql`
       INSERT INTO memories (image_name, image_url)
-      VALUES (${fileName}, ${imageUrl})
+      VALUES (${file.name}, ${imageUrl})
     `;
 
-        return Response.json({ success: true, imageUrl });
-    } catch (err) {
-        console.error(err);
-        return new Response("Upload error", { status: 500 });
+        return Response.json({
+            success: true,
+            url: imageUrl,
+        });
+    } catch (error) {
+        console.error("UPLOAD ERROR:", error);
+        return new Response(
+            JSON.stringify({ message: "Upload failed" }),
+            { status: 500 }
+        );
     }
 }
