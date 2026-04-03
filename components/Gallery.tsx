@@ -7,6 +7,12 @@ import { useCallback } from "react";
 import { useEffect, useState } from "react";
 
 
+interface GalleryImage {
+    id: string;
+    image_name: string;
+    image_url: string;
+}
+
 export default function Gallery() {
     const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: "start" }, [Autoplay({ delay: 3500 })]);
 
@@ -18,13 +24,20 @@ export default function Gallery() {
         if (emblaApi) emblaApi.scrollNext()
     }, [emblaApi])
 
-    const [images, setImages] = useState([]);
+    const [images, setImages] = useState<GalleryImage[]>([]);
 
     useEffect(() => {
         fetch("/api/memories")
             .then((res) => res.json())
-            .then(setImages);
+            .then((data) => {
+                if (Array.isArray(data)) {
+                    setImages(data);
+                }
+            })
+            .catch(err => console.error("Failed to fetch memories:", err));
     }, []);
+
+    if (images.length === 0) return null;
 
     return (
         <section className="py-24 px-6 bg-gradient-to-b from-background to-[#FFF5F5]">
