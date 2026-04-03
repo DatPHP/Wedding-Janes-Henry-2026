@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Hero() {
     return (
-        <section className="min-h-screen flex flex-col items-center justify-center text-center px-6 bg-gradient-to-b from-[#FFF5F5] to-background pt-20">
+        <section className="min-h-screen flex flex-col items-center justify-center text-center px-6 bg-gradient-to-b from-accent-light to-background pt-20">
             <h2 className="text-accent uppercase tracking-[0.3em] text-sm md:text-md mb-6 font-medium">
                 We are getting married
             </h2>
@@ -28,7 +28,7 @@ export default function Hero() {
                     alt="Janes & Henry"
                     width={800}
                     height={1000}
-                    className="rounded-[32px] shadow-[0_20px_50px_rgb(243,115,172,0.15)] object-cover"
+                    className="rounded-[32px] shadow-[0_20px_50px_rgba(255,133,161,0.25)] object-cover"
                     priority
                 />
             </div>

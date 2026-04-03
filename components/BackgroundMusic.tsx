@@ -47,7 +47,7 @@ export default function BackgroundMusic() {
                 <motion.div
                     animate={isPlaying ? { rotate: 360 } : { rotate: 0 }}
                     transition={isPlaying ? { repeat: Infinity, duration: 4, ease: "linear" } : { duration: 0.5 }}
-                    className={`w-14 h-14 bg-[#111111] rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.3)] border-2 border-accent/20 flex items-center justify-center relative overflow-hidden transition-all group-hover:scale-110`}
+                    className={`w-14 h-14 bg-foreground rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.3)] border-2 border-accent/20 flex items-center justify-center relative overflow-hidden transition-all group-hover:scale-110`}
                 >
                     {/* Vinyl grooves effect */}
                     <div className="absolute inset-0 border-[4px] border-white/5 rounded-full" />

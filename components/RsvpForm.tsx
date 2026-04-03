@@ -74,7 +74,7 @@ export default function RsvpForm() {
   };
 
   return (
-    <section className="py-24 px-6 bg-[#FFF5F5] relative">
+    <section className="py-24 px-6 bg-accent-light relative">
       <div className="max-w-xl mx-auto bg-white p-8 md:p-12 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-accent/10 relative z-10">
         <h2 className="text-3xl md:text-5xl font-serif text-center mb-8 text-black">
           Send Your Wishes
@@ -167,7 +167,7 @@ export default function RsvpForm() {
 
           <button
             disabled={loading}
-            className="w-full bg-accent text-white py-4 rounded-2xl font-medium tracking-wide hover:bg-[#E05B92] transition-colors focus:ring-2 focus:ring-accent focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-accent/20"
+            className="w-full bg-accent text-white py-4 rounded-2xl font-medium tracking-wide hover:brightness-110 hover:-translate-y-1 transition-all focus:ring-2 focus:ring-accent focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-accent/20"
           >
             {loading ? "Sending..." : "Confirm RSVP"}
           </button>

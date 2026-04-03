@@ -8,7 +8,7 @@ export default function DigitalGifting() {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <section className="py-24 bg-[#FFF5F5] text-center px-6">
+        <section className="py-24 bg-accent-light text-center px-6">
             <div className="max-w-2xl mx-auto">
                 <h2 className="text-3xl md:text-5xl font-serif mb-6 text-black">
                     Send Wishes & Gifts
@@ -19,7 +19,7 @@ export default function DigitalGifting() {
 
                 <button
                     onClick={() => setIsOpen(true)}
-                    className="inline-flex items-center gap-3 bg-accent text-white px-8 py-4 rounded-full hover:bg-[#E05B92] hover:shadow-xl hover:-translate-y-1 transition-all"
+                    className="inline-flex items-center gap-3 bg-accent text-white px-8 py-4 rounded-full hover:brightness-110 hover:shadow-xl hover:-translate-y-1 transition-all"
                 >
                     <Gift size={20} />
                     <span className="font-medium">Digital Gifting</span>

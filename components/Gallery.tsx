@@ -40,7 +40,7 @@ export default function Gallery() {
     if (images.length === 0) return null;
 
     return (
-        <section className="py-24 px-6 bg-gradient-to-b from-background to-[#FFF5F5]">
+        <section className="py-24 px-6 bg-gradient-to-b from-background to-accent-light">
             <div className="max-w-6xl mx-auto">
                 <h2 className="text-4xl md:text-5xl font-serif text-center mb-16 text-black">
                     Memories
@@ -69,7 +69,7 @@ export default function Gallery() {
                     {/* Navigation Buttons */}
                     <button
                         onClick={scrollPrev}
-                        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-6 w-12 h-12 bg-white/95 rounded-full shadow-xl flex items-center justify-center text-stone-700 hover:text-stone-900 hover:scale-110 transition-all z-10 opacity-0 group-hover/carousel:opacity-100 focus:opacity-100"
+                        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 md:-translate-x-6 w-12 h-12 bg-white/95 rounded-full shadow-xl flex items-center justify-center text-foreground hover:text-accent hover:scale-110 transition-all z-10 opacity-0 group-hover/carousel:opacity-100 focus:opacity-100"
                         aria-label="Previous slide"
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
@@ -77,7 +77,7 @@ export default function Gallery() {
 
                     <button
                         onClick={scrollNext}
-                        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-6 w-12 h-12 bg-white/95 rounded-full shadow-xl flex items-center justify-center text-stone-700 hover:text-stone-900 hover:scale-110 transition-all z-10 opacity-0 group-hover/carousel:opacity-100 focus:opacity-100"
+                        className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 md:translate-x-6 w-12 h-12 bg-white/95 rounded-full shadow-xl flex items-center justify-center text-foreground hover:text-accent hover:scale-110 transition-all z-10 opacity-0 group-hover/carousel:opacity-100 focus:opacity-100"
                         aria-label="Next slide"
                     >
                         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
