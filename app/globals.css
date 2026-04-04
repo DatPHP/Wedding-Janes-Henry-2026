@@ -23,14 +23,3 @@
   --font-serif: var(--font-playfair), serif;
   --font-script: var(--font-great-vibes), cursive;
 }
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    /* Keep it consistent to maintain the wedding aesthetic */
-    --background: #000000;
-    --foreground: #FFFFFF;
-    --muted: #A0A0A0;
-    --accent: #FF85A1;
-    --accent-light: #2A1017;
-  }
-}
