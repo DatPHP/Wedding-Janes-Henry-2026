@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+  /* Offset anchor scroll targets below the fixed nav (~64px) */
+  scroll-padding-top: 64px;
+}
+
 :root {
   --background: #FFFFFF;
   /* Pure white background */
