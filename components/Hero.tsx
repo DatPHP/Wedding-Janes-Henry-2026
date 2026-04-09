@@ -7,7 +7,7 @@ function Ornament() {
       viewBox="0 0 200 20"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="w-40 md:w-56 mx-auto opacity-60"
+      className="w-28 md:w-56 mx-auto opacity-60"
       aria-hidden="true"
     >
       <line x1="0" y1="10" x2="70" y2="10" stroke="#C9A96E" strokeWidth="0.8" />
@@ -38,15 +38,15 @@ function AvatarMedallion({
 }) {
   return (
     <div
-      className={`flex flex-col items-center gap-3 ${
+      className={`flex flex-col items-center gap-1 md:gap-3 ${
         side === "left" ? "md:items-end" : "md:items-start"
       }`}
     >
       {/* Layered ring frame */}
       <div className="relative group">
-        {/* Outer glow ring */}
+        {/* Outer glow ring (decorative, sits behind the image ring) */}
         <div
-          className="absolute inset-0 rounded-full"
+          className="absolute inset-0 rounded-full pointer-events-none"
           style={{
             background:
               "conic-gradient(from 0deg, #C9A96E 0%, #FF85A1 25%, #FFEBF0 50%, #FF85A1 75%, #C9A96E 100%)",
@@ -54,15 +54,15 @@ function AvatarMedallion({
             borderRadius: "9999px",
           }}
         />
-        {/* Golden border ring */}
+        {/* Golden border ring with photo */}
         <div
           className="relative rounded-full overflow-hidden"
           style={{
-            width: "clamp(140px, 18vw, 200px)",
-            height: "clamp(140px, 18vw, 200px)",
-            border: "3px solid #C9A96E",
+            width: "clamp(72px, 14vw, 200px)",
+            height: "clamp(72px, 14vw, 200px)",
+            border: "2px solid #C9A96E",
             boxShadow:
-              "0 0 0 5px #FFEBF0, 0 0 0 7px #C9A96E44, 0 12px 40px rgba(201,169,110,0.25)",
+              "0 0 0 4px #FFEBF0, 0 0 0 6px #C9A96E44, 0 8px 30px rgba(201,169,110,0.22)",
           }}
         >
           <Image
@@ -70,12 +70,12 @@ function AvatarMedallion({
             alt={name}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
-            sizes="(max-width: 768px) 140px, 200px"
+            sizes="(max-width: 768px) 80px, 200px"
           />
         </div>
         {/* Initial badge */}
         <div
-          className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-9 h-9 rounded-full flex items-center justify-center text-white font-serif text-lg font-light z-10"
+          className="absolute -bottom-1 md:-bottom-2 left-1/2 -translate-x-1/2 w-5 h-5 md:w-9 md:h-9 rounded-full flex items-center justify-center text-white font-serif text-[9px] md:text-lg font-light z-10"
           style={{
             background: "linear-gradient(135deg, #FF85A1 0%, #C9A96E 100%)",
             boxShadow: "0 2px 8px rgba(201,169,110,0.4)",
@@ -87,7 +87,7 @@ function AvatarMedallion({
 
       {/* Name */}
       <p
-        className="font-serif text-lg md:text-xl mt-4 tracking-wide"
+        className="font-serif text-[9px] md:text-xl mt-2 md:mt-4 tracking-wide"
         style={{ color: "#6B4226" }}
       >
         {name}
@@ -100,7 +100,7 @@ function AvatarMedallion({
 export default function Hero() {
   return (
     <section
-      className="min-h-screen flex flex-col items-center justify-center text-center px-4 md:px-6 pt-20 pb-10 relative overflow-hidden"
+      className="min-h-screen flex flex-col items-center justify-center text-center px-2 md:px-6 pt-20 pb-10 relative overflow-hidden"
       style={{
         background:
           "linear-gradient(160deg, #FFF5F7 0%, #FFFFFF 40%, #FFFBF0 70%, #FFF0F5 100%)",
@@ -118,14 +118,14 @@ export default function Hero() {
 
       {/* ── "We are getting married" label ── */}
       <p
-        className="uppercase tracking-[0.35em] text-xs md:text-sm font-medium mb-8"
-        style={{ color: "#C9A96E", letterSpacing: "0.35em" }}
+        className="uppercase tracking-[0.25em] md:tracking-[0.35em] text-[10px] md:text-sm font-medium mb-6 md:mb-8"
+        style={{ color: "#C9A96E" }}
       >
         We Are Getting Married
       </p>
 
-      {/* ── Three-column hero: avatar | title | avatar ── */}
-      <div className="w-full max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-6 md:gap-10">
+      {/* ── Three-column hero: avatar | title | avatar (always 3 cols) ── */}
+      <div className="w-full max-w-5xl mx-auto grid grid-cols-[1fr_auto_1fr] items-center gap-2 md:gap-10">
         {/* Left — Janes */}
         <div className="flex justify-center md:justify-end">
           <AvatarMedallion
@@ -137,13 +137,13 @@ export default function Hero() {
         </div>
 
         {/* Center — text content */}
-        <div className="flex flex-col items-center text-center px-2 md:px-6">
+        <div className="flex flex-col items-center text-center px-1 md:px-6">
           <Ornament />
 
           <h1
-            className="font-serif font-light mt-4 mb-3 leading-tight"
+            className="font-serif font-light mt-2 md:mt-4 mb-2 md:mb-3 leading-tight"
             style={{
-              fontSize: "clamp(2.6rem, 6vw, 5.5rem)",
+              fontSize: "clamp(1.6rem, 6vw, 5.5rem)",
               color: "#3B1C2C",
               letterSpacing: "0.02em",
             }}
@@ -153,9 +153,9 @@ export default function Hero() {
 
           {/* Script quote */}
           <p
-            className="font-script leading-snug mb-4"
+            className="font-script leading-snug mb-3 md:mb-4"
             style={{
-              fontSize: "clamp(1.3rem, 2.8vw, 2rem)",
+              fontSize: "clamp(0.9rem, 2.8vw, 2rem)",
               color: "#FF85A1",
               opacity: 0.9,
             }}
@@ -169,8 +169,12 @@ export default function Hero() {
 
           {/* Date */}
           <p
-            className="font-serif italic mt-5"
-            style={{ fontSize: "clamp(1rem, 2vw, 1.35rem)", color: "#6B4226", opacity: 0.85 }}
+            className="font-serif italic mt-3 md:mt-5"
+            style={{
+              fontSize: "clamp(0.75rem, 2vw, 1.35rem)",
+              color: "#6B4226",
+              opacity: 0.85,
+            }}
           >
             December 06, 2026
           </p>
@@ -188,7 +192,7 @@ export default function Hero() {
       </div>
 
       {/* ── Couple photo below ── */}
-      <div className="mt-14 w-full max-w-md mx-auto mb-8">
+      <div className="mt-10 md:mt-14 w-full max-w-md mx-auto mb-6 md:mb-8">
         <div
           className="rounded-[28px] overflow-hidden"
           style={{
@@ -209,7 +213,7 @@ export default function Hero() {
       </div>
 
       {/* Scroll indicator */}
-      <div className="animate-bounce mt-4 mb-2" style={{ color: "#FF85A1" }}>
+      <div className="animate-bounce mt-2 mb-2" style={{ color: "#FF85A1" }}>
         <svg
           className="w-6 h-6 mx-auto"
           fill="none"
