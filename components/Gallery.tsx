@@ -51,7 +51,7 @@ export default function Gallery() {
                         <div className="flex -ml-6">
                             {images.map((img: any) => (
                                 <div key={img.id} className="flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_25%] pl-6">
-                                    <div className="relative h-[400px] w-full rounded-2xl overflow-hidden shadow-lg group">
+                                    <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden shadow-lg group">
                                         <Image
                                             src={img.image_url}
                                             alt={img.image_name}
