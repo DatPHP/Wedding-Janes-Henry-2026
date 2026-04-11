@@ -50,14 +50,14 @@ export default function Gallery() {
                     <div className="overflow-hidden" ref={emblaRef}>
                         <div className="flex -ml-6">
                             {images.map((img: any) => (
-                                <div key={img.id} className="flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-6">
+                                <div key={img.id} className="flex-[0_0_100%] min-w-0 md:flex-[0_0_50%] lg:flex-[0_0_25%] pl-6">
                                     <div className="relative h-[400px] w-full rounded-2xl overflow-hidden shadow-lg group">
                                         <Image
                                             src={img.image_url}
                                             alt={img.image_name}
                                             fill
                                             className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                                         />
                                         <div className="absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:opacity-0" />
                                     </div>
