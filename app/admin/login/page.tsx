@@ -33,8 +33,9 @@ export default function AdminLogin() {
       }
 
       // Cookie is set automatically by the API (HttpOnly).
+      // Use hard redirect so the browser sends the cookie to middleware.
       toast.success("Chào mừng trở lại! 💍");
-      router.push("/admin");
+      window.location.replace("/admin");
     } catch {
       toast.error("Đã có lỗi xảy ra. Vui lòng thử lại.");
       setLoading(false);

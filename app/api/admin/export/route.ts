@@ -1,13 +1,8 @@
 import { sql } from "@vercel/postgres";
 import * as XLSX from "xlsx";
 
-export async function GET(req: Request) {
-  const token = req.headers.get("authorization");
-
-  if (token !== `Bearer ${process.env.ADMIN_TOKEN}`) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-
+export async function GET() {
+  // Auth is handled by middleware (admin_session cookie)
   const { rows } = await sql`
     SELECT
       name,

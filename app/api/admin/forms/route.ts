@@ -1,19 +1,8 @@
 import { sql } from "@vercel/postgres";
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
-    // 1️⃣ Lấy Authorization header
-    const authHeader = req.headers.get("authorization");
-
-    // 2️⃣ Check token
-    if (
-      !authHeader ||
-      authHeader !== `Bearer ${process.env.ADMIN_TOKEN}`
-    ) {
-      return new Response("Unauthorized", { status: 401 });
-    }
-
-    // 3️⃣ Query data
+    // Auth is handled by middleware (admin_session cookie)
     const { rows } = await sql`
       SELECT
         id,
@@ -27,7 +16,6 @@ export async function GET(req: Request) {
       ORDER BY submitted_at DESC
     `;
 
-    // 4️⃣ Return JSON
     return Response.json(rows);
   } catch (error) {
     console.error("Admin forms error:", error);

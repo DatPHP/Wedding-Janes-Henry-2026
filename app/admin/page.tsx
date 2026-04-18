@@ -58,8 +58,8 @@ export default function AdminPage() {
         try {
             setLoadingGuests(true);
             const res = await fetch("/api/admin/forms");
-            if (res.status === 401) {
-                router.push("/admin/login");
+            if (!res.ok) {
+                console.error("Failed to fetch guests:", res.status);
                 return;
             }
             const data = await res.json();

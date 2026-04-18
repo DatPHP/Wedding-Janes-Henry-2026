@@ -3,11 +3,7 @@ import { sql } from "@vercel/postgres";
 
 export async function POST(req: Request) {
     try {
-        // 🔐 Auth
-        const auth = req.headers.get("authorization");
-        if (auth !== `Bearer ${process.env.ADMIN_TOKEN}`) {
-            return new Response("Unauthorized", { status: 401 });
-        }
+        // Auth is handled by middleware (admin_session cookie)
 
         const formData = await req.formData();
         const file = formData.get("file") as File;
@@ -45,10 +41,7 @@ export async function POST(req: Request) {
 
 export async function DELETE(req: Request) {
     try {
-        const auth = req.headers.get("authorization");
-        if (auth !== `Bearer ${process.env.ADMIN_TOKEN}`) {
-            return new Response("Unauthorized", { status: 401 });
-        }
+        // Auth is handled by middleware (admin_session cookie)
 
         const body = await req.json();
         const { id, imageUrl } = body;
