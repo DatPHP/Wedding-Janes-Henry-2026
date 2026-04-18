@@ -3,9 +3,18 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Users, Image as ImageIcon, LogOut, Download, Trash2, UploadCloud, Loader2 } from "lucide-react";
+import {
+    Users,
+    Image as ImageIcon,
+    LogOut,
+    Download,
+    Trash2,
+    UploadCloud,
+    Loader2,
+    MessageSquareHeart,
+} from "lucide-react";
 import { toast } from "react-toastify";
-
+import { AdminWishesClient } from "@/components/wishes/AdminWishesClient";
 
 type WeddingForm = {
     id: string;
@@ -23,10 +32,12 @@ type Memory = {
     image_url: string;
 };
 
+type Tab = "guests" | "memories" | "wishes";
+
 export default function AdminPage() {
     const router = useRouter();
-    const [activeTab, setActiveTab] = useState<"guests" | "memories">("guests");
-    
+    const [activeTab, setActiveTab] = useState<Tab>("guests");
+
     // Guests State
     const [guests, setGuests] = useState<WeddingForm[]>([]);
     const [loadingGuests, setLoadingGuests] = useState(true);
@@ -37,26 +48,17 @@ export default function AdminPage() {
     const [isUploading, setIsUploading] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
-    // Initial Auth & Data Fetch
+    // Initial Data Fetch — auth is handled by middleware (cookie), no localStorage needed
     useEffect(() => {
-        const token = localStorage.getItem("admin_token");
-        if (!token) {
-            router.push("/admin/login");
-            return;
-        }
-
-        fetchGuests(token);
+        fetchGuests();
         fetchMemories();
-    }, [router]);
+    }, []);
 
-    const fetchGuests = async (token: string) => {
+    const fetchGuests = async () => {
         try {
             setLoadingGuests(true);
-            const res = await fetch("/api/admin/forms", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const res = await fetch("/api/admin/forms");
             if (res.status === 401) {
-                localStorage.removeItem("admin_token");
                 router.push("/admin/login");
                 return;
             }
@@ -82,17 +84,18 @@ export default function AdminPage() {
         }
     };
 
-    const logout = () => {
-        localStorage.removeItem("admin_token");
+    const logout = async () => {
+        try {
+            // Clear the HttpOnly session cookie via the API
+            await fetch("/api/admin/login", { method: "DELETE" });
+        } catch {
+            // Proceed with redirect regardless
+        }
         router.push("/admin/login");
     };
 
     const exportExcel = async () => {
-        const token = localStorage.getItem("admin_token");
-        const res = await fetch("/api/admin/export", {
-            headers: { Authorization: `Bearer ${token}` },
-        });
-
+        const res = await fetch("/api/admin/export");
         const blob = await res.blob();
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
@@ -112,12 +115,9 @@ export default function AdminPage() {
         try {
             const res = await fetch("/api/admin/memories", {
                 method: "POST",
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("admin_token")}`,
-                },
                 body: formData,
             });
-            
+
             if (res.ok) {
                 toast.success("Photo uploaded successfully!");
                 await fetchMemories();
@@ -129,7 +129,6 @@ export default function AdminPage() {
             toast.error("Network error. Upload failed.");
         } finally {
             setIsUploading(false);
-            // Reset input
             e.target.value = "";
         }
     };
@@ -143,86 +142,81 @@ export default function AdminPage() {
         try {
             const res = await fetch("/api/admin/memories", {
                 method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("admin_token")}`,
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id, imageUrl }),
             });
 
             if (res.ok) {
-                toast.update(loadingId, { render: "Photo deleted successfully!", type: "success", isLoading: false, autoClose: 3000 });
+                toast.update(loadingId, { render: "Photo deleted!", type: "success", isLoading: false, autoClose: 3000 });
                 await fetchMemories();
             } else {
                 toast.update(loadingId, { render: "Failed to delete photo.", type: "error", isLoading: false, autoClose: 3000 });
             }
         } catch (error) {
             console.error("Delete failed", error);
-            toast.update(loadingId, { render: "Network error. Deletion failed.", type: "error", isLoading: false, autoClose: 3000 });
+            toast.update(loadingId, { render: "Network error.", type: "error", isLoading: false, autoClose: 3000 });
         } finally {
             setDeletingId(null);
         }
     };
 
+    const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
+        { id: "guests", label: "Khách mời", icon: <Users className="w-4 h-4" /> },
+        { id: "memories", label: "Ký ức", icon: <ImageIcon className="w-4 h-4" /> },
+        { id: "wishes", label: "Lời chúc", icon: <MessageSquareHeart className="w-4 h-4" /> },
+    ];
+
     return (
         <div className="min-h-screen bg-neutral-50 p-4 md:p-8 font-sans">
-            <div className="max-w-7xl mx-auto space-y-8">
-                
+            <div className="max-w-7xl mx-auto space-y-6">
+
                 {/* Header */}
                 <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-neutral-100">
                     <div>
                         <h1 className="text-2xl font-serif text-neutral-900">Admin Dashboard</h1>
-                        <p className="text-sm text-neutral-500 mt-1">Manage your wedding guests and memories.</p>
+                        <p className="text-sm text-neutral-500 mt-1">Janes & Henry · Quản lý đám cưới.</p>
                     </div>
                     <button
                         onClick={logout}
                         className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 rounded-lg transition-colors"
                     >
                         <LogOut className="w-4 h-4" />
-                        Logout
+                        Đăng xuất
                     </button>
                 </header>
 
                 {/* Tabs */}
-                <div className="flex space-x-1 bg-white p-1 rounded-xl shadow-sm border border-neutral-100 md:w-max">
-                    <button
-                        onClick={() => setActiveTab("guests")}
-                        className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                            activeTab === "guests"
-                                ? "bg-stone-900 text-white shadow"
-                                : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
-                        }`}
-                    >
-                        <Users className="w-4 h-4" />
-                        Wedding Guests
-                    </button>
-                    <button
-                        onClick={() => setActiveTab("memories")}
-                        className={`flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                            activeTab === "memories"
-                                ? "bg-stone-900 text-white shadow"
-                                : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
-                        }`}
-                    >
-                        <ImageIcon className="w-4 h-4" />
-                        Memories
-                    </button>
+                <div className="flex space-x-1 bg-white p-1 rounded-xl shadow-sm border border-neutral-100 w-fit">
+                    {tabs.map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                                activeTab === tab.id
+                                    ? "bg-stone-900 text-white shadow"
+                                    : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50"
+                            }`}
+                        >
+                            {tab.icon}
+                            {tab.label}
+                        </button>
+                    ))}
                 </div>
 
-                {/* Content Area */}
-                <main className="bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden">
-                    
-                    {/* GUESTS TAB */}
+                {/* Content */}
+                <main className="bg-white rounded-2xl shadow-sm border border-neutral-100 overflow-hidden p-6">
+
+                    {/* ── GUESTS TAB ── */}
                     {activeTab === "guests" && (
-                        <div className="p-6">
+                        <div>
                             <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-lg font-medium text-neutral-900">Guest List</h2>
+                                <h2 className="text-lg font-medium text-neutral-900">Danh sách khách mời</h2>
                                 <button
                                     onClick={exportExcel}
                                     className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg transition-colors"
                                 >
                                     <Download className="w-4 h-4" />
-                                    Export to Excel
+                                    Export Excel
                                 </button>
                             </div>
 
@@ -235,19 +229,19 @@ export default function AdminPage() {
                                     <table className="w-full text-sm text-left">
                                         <thead className="text-xs text-neutral-500 uppercase bg-neutral-50">
                                             <tr>
-                                                <th className="px-6 py-4 font-medium">Name</th>
-                                                <th className="px-6 py-4 font-medium">Phone</th>
-                                                <th className="px-6 py-4 font-medium">Relationship</th>
-                                                <th className="px-6 py-4 font-medium">Attendance</th>
-                                                <th className="px-6 py-4 font-medium max-w-xs">Message</th>
-                                                <th className="px-6 py-4 font-medium text-right">Submitted At</th>
+                                                <th className="px-6 py-4 font-medium">Tên</th>
+                                                <th className="px-6 py-4 font-medium">Điện thoại</th>
+                                                <th className="px-6 py-4 font-medium">Quan hệ</th>
+                                                <th className="px-6 py-4 font-medium">Tham dự</th>
+                                                <th className="px-6 py-4 font-medium max-w-xs">Lời nhắn</th>
+                                                <th className="px-6 py-4 font-medium text-right">Thời gian</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-neutral-200">
                                             {guests.length === 0 ? (
                                                 <tr>
-                                                    <td colSpan={6} className="px-6 py-8 text-center text-neutral-500">
-                                                        No submissions yet. Check back later!
+                                                    <td colSpan={6} className="px-6 py-8 text-center text-neutral-400">
+                                                        Chưa có ai đăng ký. Hãy chờ một chút!
                                                     </td>
                                                 </tr>
                                             ) : (
@@ -258,21 +252,20 @@ export default function AdminPage() {
                                                         <td className="px-6 py-4 text-neutral-600">{row.relationship}</td>
                                                         <td className="px-6 py-4">
                                                             <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                                                                row.attendance === 'Yes' ? 'bg-emerald-100 text-emerald-800' : 
-                                                                row.attendance === 'No' ? 'bg-red-100 text-red-800' : 
-                                                                'bg-amber-100 text-amber-800'
+                                                                row.attendance === "Yes" ? "bg-emerald-100 text-emerald-800" :
+                                                                row.attendance === "No"  ? "bg-red-100 text-red-800" :
+                                                                "bg-amber-100 text-amber-800"
                                                             }`}>
                                                                 {row.attendance}
                                                             </span>
                                                         </td>
-                                                        <td className="px-6 py-4 text-neutral-600 max-w-xs truncate" title={row.message}>{row.message || '-'}</td>
+                                                        <td className="px-6 py-4 text-neutral-600 max-w-xs truncate" title={row.message}>
+                                                            {row.message || "-"}
+                                                        </td>
                                                         <td className="px-6 py-4 text-neutral-500 text-right whitespace-nowrap">
                                                             {new Date(row.submitted_at).toLocaleDateString("vi-VN", {
-                                                                year: "numeric",
-                                                                month: "short",
-                                                                day: "numeric",
-                                                                hour: "2-digit",
-                                                                minute: "2-digit"
+                                                                year: "numeric", month: "short", day: "numeric",
+                                                                hour: "2-digit", minute: "2-digit",
                                                             })}
                                                         </td>
                                                     </tr>
@@ -285,38 +278,22 @@ export default function AdminPage() {
                         </div>
                     )}
 
-                    {/* MEMORIES TAB */}
+                    {/* ── MEMORIES TAB ── */}
                     {activeTab === "memories" && (
-                        <div className="p-6">
+                        <div>
                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                                 <div>
-                                    <h2 className="text-lg font-medium text-neutral-900">Photo Gallery</h2>
-                                    <p className="text-sm text-neutral-500">Upload and manage memories to show on the main page.</p>
+                                    <h2 className="text-lg font-medium text-neutral-900">Thư viện ảnh</h2>
+                                    <p className="text-sm text-neutral-500">Tải lên và quản lý ảnh hiển thị trên trang chính.</p>
                                 </div>
-                                
-                                {/* Custom Upload Button */}
-                                <div>
-                                    <label className="relative inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-stone-900 hover:bg-stone-800 rounded-lg cursor-pointer transition-colors shadow-sm">
-                                        {isUploading ? (
-                                            <>
-                                                <Loader2 className="w-4 h-4 animate-spin" />
-                                                Uploading...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <UploadCloud className="w-4 h-4" />
-                                                Upload Photo
-                                            </>
-                                        )}
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            className="hidden"
-                                            onChange={handleUpload}
-                                            disabled={isUploading}
-                                        />
-                                    </label>
-                                </div>
+                                <label className="relative inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-stone-900 hover:bg-stone-800 rounded-lg cursor-pointer transition-colors shadow-sm">
+                                    {isUploading ? (
+                                        <><Loader2 className="w-4 h-4 animate-spin" /> Đang tải lên...</>
+                                    ) : (
+                                        <><UploadCloud className="w-4 h-4" /> Tải ảnh lên</>
+                                    )}
+                                    <input type="file" accept="image/*" className="hidden" onChange={handleUpload} disabled={isUploading} />
+                                </label>
                             </div>
 
                             {loadingMemories ? (
@@ -326,8 +303,8 @@ export default function AdminPage() {
                             ) : memories.length === 0 ? (
                                 <div className="text-center py-20 border-2 border-dashed border-neutral-200 rounded-2xl bg-neutral-50">
                                     <ImageIcon className="w-12 h-12 text-neutral-300 mx-auto mb-3" />
-                                    <h3 className="text-sm font-medium text-neutral-900">No memories yet</h3>
-                                    <p className="text-sm text-neutral-500 mt-1">Upload an image to start filling out the gallery.</p>
+                                    <h3 className="text-sm font-medium text-neutral-900">Chưa có ảnh nào</h3>
+                                    <p className="text-sm text-neutral-500 mt-1">Tải lên ảnh đầu tiên để bắt đầu.</p>
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
@@ -340,7 +317,6 @@ export default function AdminPage() {
                                                 className="object-cover transition-transform duration-500 group-hover:scale-105"
                                                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                                             />
-                                            {/* Delete Overlay */}
                                             <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex justify-center items-center">
                                                 <button
                                                     onClick={() => handleDeleteMemory(img.id, img.image_url)}
@@ -350,10 +326,7 @@ export default function AdminPage() {
                                                     {deletingId === img.id ? (
                                                         <Loader2 className="w-4 h-4 animate-spin" />
                                                     ) : (
-                                                        <>
-                                                            <Trash2 className="w-4 h-4" />
-                                                            Delete
-                                                        </>
+                                                        <><Trash2 className="w-4 h-4" /> Xóa</>
                                                     )}
                                                 </button>
                                             </div>
@@ -361,6 +334,19 @@ export default function AdminPage() {
                                     ))}
                                 </div>
                             )}
+                        </div>
+                    )}
+
+                    {/* ── WISHES TAB ── */}
+                    {activeTab === "wishes" && (
+                        <div>
+                            <div className="mb-6">
+                                <h2 className="text-lg font-medium text-neutral-900">Quản lý lời chúc</h2>
+                                <p className="text-sm text-neutral-500 mt-1">
+                                    Duyệt, ghim hoặc xóa lời chúc từ khách mời. Chỉ lời chúc đã duyệt mới hiển thị công khai.
+                                </p>
+                            </div>
+                            <AdminWishesClient />
                         </div>
                     )}
                 </main>
