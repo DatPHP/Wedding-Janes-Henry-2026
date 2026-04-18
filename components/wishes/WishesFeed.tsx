@@ -1,16 +1,16 @@
 // components/wishes/WishesFeed.tsx
-// Live feed hiển thị dạng marquee cuộn vô hạn, tự động phát
+// Live feed – infinite vertical auto-scroll marquee
 
 'use client'
 
-import { useRef, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useWishesFeed } from '@/hooks/useWishesFeed'
 import { RELATIONSHIP_LABELS, RELATIONSHIP_COLORS } from '@/types/wishes'
 import type { Wish } from '@/types/wishes'
 import { formatDistanceToNow } from 'date-fns'
 import { vi } from 'date-fns/locale'
 
-// ── Avatar helpers ──────────────────────────────────────────────
+// ── Helpers ─────────────────────────────────────────────────────
 function getAvatarColor(name: string) {
     const colors = [
         { bg: '#FEE2E2', text: '#991B1B' },
@@ -35,30 +35,21 @@ function getInitials(name: string) {
 function formatTime(iso: string) {
     try {
         return formatDistanceToNow(new Date(iso), { addSuffix: true, locale: vi })
-    } catch {
-        return ''
-    }
+    } catch { return '' }
 }
 
-// ── Single card ─────────────────────────────────────────────────
+// ── Single Card ─────────────────────────────────────────────────
 function WishCard({ wish, isNew = false }: { wish: Wish; isNew?: boolean }) {
     const relColor = RELATIONSHIP_COLORS[wish.relationship]
-    const avatar = getAvatarColor(wish.name)
-    const initials = getInitials(wish.name)
+    const avatar   = getAvatarColor(wish.name)
 
     return (
-        <div
-            className={[
-                'relative flex gap-3 px-5 py-4 rounded-2xl border',
-                'bg-white/80 dark:bg-neutral-900/80 backdrop-blur-sm',
-                wish.is_pinned
-                    ? 'border-amber-200 dark:border-amber-800 shadow-amber-50'
-                    : 'border-neutral-100 dark:border-neutral-800',
-                'shadow-sm',
-                isNew ? 'ring-2 ring-rose-300 ring-offset-1' : '',
-            ].join(' ')}
-        >
-            {/* Pin badge */}
+        <div className={[
+            'relative flex gap-3 px-5 py-4 rounded-2xl border bg-white dark:bg-neutral-900 shadow-sm',
+            wish.is_pinned ? 'border-amber-200 dark:border-amber-800' : 'border-neutral-100 dark:border-neutral-800',
+            isNew ? 'ring-2 ring-rose-300 ring-offset-1' : '',
+        ].join(' ')}>
+
             {wish.is_pinned && (
                 <span className="absolute top-2 right-2 text-amber-400 text-[10px]">📌</span>
             )}
@@ -68,12 +59,11 @@ function WishCard({ wish, isNew = false }: { wish: Wish; isNew?: boolean }) {
                 className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-semibold select-none"
                 style={{ background: avatar.bg, color: avatar.text }}
             >
-                {initials}
+                {getInitials(wish.name)}
             </div>
 
             {/* Body */}
             <div className="flex-1 min-w-0">
-                {/* Meta */}
                 <div className="flex items-center gap-2 flex-wrap mb-1">
                     <span className="text-[13px] font-semibold text-neutral-900 dark:text-neutral-100 truncate">
                         {wish.name}
@@ -81,26 +71,19 @@ function WishCard({ wish, isNew = false }: { wish: Wish; isNew?: boolean }) {
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${relColor.bg} ${relColor.text}`}>
                         {RELATIONSHIP_LABELS[wish.relationship]}
                     </span>
-                    {wish.attending ? (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-green-100 text-green-700">
-                            ✓ Tham dự
-                        </span>
-                    ) : (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-medium bg-neutral-100 text-neutral-500">
-                            Vắng
-                        </span>
-                    )}
+                    {wish.attending
+                        ? <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">✓ Tham dự</span>
+                        : <span className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-500 font-medium">Vắng</span>
+                    }
                     <span className="text-[11px] text-neutral-400 ml-auto flex-shrink-0">
                         {formatTime(wish.created_at)}
                     </span>
                 </div>
 
-                {/* Message */}
                 <p className="text-[13px] text-neutral-600 dark:text-neutral-300 leading-relaxed line-clamp-3">
                     {wish.message}
                 </p>
 
-                {/* Hearts */}
                 {wish.hearts > 0 && (
                     <span className="mt-1.5 inline-flex items-center gap-1 text-[11px] text-rose-400">
                         ♥ {wish.hearts}
@@ -114,7 +97,7 @@ function WishCard({ wish, isNew = false }: { wish: Wish; isNew?: boolean }) {
 // ── Skeleton ────────────────────────────────────────────────────
 function SkeletonCard() {
     return (
-        <div className="flex gap-3 px-5 py-4 rounded-2xl border border-neutral-100 bg-white/80 dark:bg-neutral-900/80 shadow-sm animate-pulse">
+        <div className="flex gap-3 px-5 py-4 rounded-2xl border border-neutral-100 bg-white dark:bg-neutral-900 shadow-sm animate-pulse">
             <div className="w-9 h-9 rounded-full bg-neutral-200 dark:bg-neutral-700 flex-shrink-0" />
             <div className="flex-1 space-y-2">
                 <div className="flex gap-2">
@@ -128,29 +111,23 @@ function SkeletonCard() {
     )
 }
 
-// ── Main Marquee Feed ───────────────────────────────────────────
+// ── Marquee Feed ────────────────────────────────────────────────
 export function WishesFeed() {
     const { wishes, totalCount, isLoading, newWishIds } = useWishesFeed()
-    const trackRef = useRef<HTMLDivElement>(null)
     const [paused, setPaused] = useState(false)
 
-    // Dynamically set duration based on number of cards (more cards = slower)
-    useEffect(() => {
-        if (trackRef.current) {
-            const duration = Math.max(20, wishes.length * 3)
-            trackRef.current.style.setProperty('--marquee-duration', `${duration}s`)
-        }
-    }, [wishes.length])
+    // Speed: each card adds ~3 s, minimum 20 s
+    const duration = Math.max(20, wishes.length * 3)
 
-    // Duplicate wishes list so the loop is seamless (list + list doubled)
+    // Duplicate so the loop is seamless (scroll -50% = exactly one list)
     const doubled = [...wishes, ...wishes]
 
     return (
         <div className="w-full flex flex-col gap-4">
+
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                    {/* Live dot */}
                     <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500" />
@@ -164,36 +141,40 @@ export function WishesFeed() {
                 )}
             </div>
 
-            {/* Marquee container */}
+            {/* Viewport */}
             <div
-                className="relative overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/30"
+                className="relative overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800"
                 style={{ height: '480px' }}
                 onMouseEnter={() => setPaused(true)}
                 onMouseLeave={() => setPaused(false)}
                 onTouchStart={() => setPaused(true)}
                 onTouchEnd={() => setPaused(false)}
             >
-                {/* Top fade */}
-                <div className="pointer-events-none absolute top-0 left-0 right-0 h-12 z-10 bg-gradient-to-b from-neutral-50 dark:from-neutral-950 to-transparent" />
-                {/* Bottom fade */}
-                <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-12 z-10 bg-gradient-to-t from-neutral-50 dark:from-neutral-950 to-transparent" />
+                {/* Edge fades */}
+                <div className="pointer-events-none absolute top-0 inset-x-0 h-14 z-10"
+                    style={{ background: 'linear-gradient(to bottom, #f9fafb, transparent)' }} />
+                <div className="pointer-events-none absolute bottom-0 inset-x-0 h-14 z-10"
+                    style={{ background: 'linear-gradient(to top, #f9fafb, transparent)' }} />
 
                 {isLoading ? (
                     <div className="p-4 space-y-3">
-                        {Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
+                        {[0, 1, 2, 3].map((i) => <SkeletonCard key={i} />)}
                     </div>
+
                 ) : wishes.length === 0 ? (
                     <div className="h-full flex flex-col items-center justify-center text-neutral-400">
                         <div className="text-4xl mb-3">💌</div>
                         <p className="text-sm">Chưa có lời chúc nào. Hãy là người đầu tiên!</p>
                     </div>
+
                 ) : (
+                    /* Scrolling track — inline style guarantees animation works regardless of Tailwind */
                     <div
-                        ref={trackRef}
-                        className="animate-scroll-up p-4 space-y-3"
+                        className="p-4 space-y-3 animate-scroll-up"
                         style={{
+                            '--marquee-duration': `${duration}s`,
                             animationPlayState: paused ? 'paused' : 'running',
-                        }}
+                        } as React.CSSProperties}
                     >
                         {doubled.map((wish, idx) => (
                             <WishCard
@@ -206,7 +187,6 @@ export function WishesFeed() {
                 )}
             </div>
 
-            {/* Hint */}
             <p className="text-center text-[11px] text-neutral-400">
                 Di chuột vào để tạm dừng · Cuộn lặp vô hạn
             </p>
