@@ -2,6 +2,7 @@
 
 import { getSupabaseAdmin } from '@/lib/supabase'
 import { AdminWishesClient } from '@/components/wishes/AdminWishesClient'
+import type { Wish } from '@/types/wishes'
 
 export const dynamic = 'force-dynamic'
 
@@ -9,10 +10,12 @@ export default async function AdminWishesPage() {
     const supabase = getSupabaseAdmin()
     
     // Lấy tất cả lời chúc (không lọc is_approved) để quản trị
-    const { data: wishes, error } = await supabase
+    const { data, error } = await supabase
         .from('wishes')
         .select('*')
         .order('created_at', { ascending: false })
+
+    const wishes = data as Wish[] | null
 
     if (error) {
         return (

@@ -14,9 +14,9 @@ export async function PATCH(
         const supabase = getSupabaseAdmin()
 
         // Phê duyệt hoặc Ghim lời chúc
-        // @ts-ignore - Bỏ qua lỗi suy luận type của Supabase SDK
-        const { data, error } = await supabase
-            .from('wishes')
+        // Phê duyệt hoặc Ghim lời chúc
+        const { data, error } = await (supabase
+            .from('wishes') as any)
             .update({
                 is_approved: body.is_approved,
                 is_pinned: body.is_pinned,

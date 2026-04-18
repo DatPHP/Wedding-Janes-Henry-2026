@@ -72,9 +72,8 @@ export async function POST(req: NextRequest) {
 
     const supabase = getSupabaseAdmin()
 
-    // @ts-ignore - Bỏ qua lỗi suy luận type của Supabase SDK
-    const { data, error } = await supabase
-        .from('wishes')
+    const { data, error } = await (supabase
+        .from('wishes') as any)
         .insert({
             name: body.name.trim(),
             email: body.email?.trim() || undefined,

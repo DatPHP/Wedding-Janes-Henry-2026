@@ -40,6 +40,7 @@ export interface Database {
                     is_approved?: boolean
                     is_pinned?: boolean
                 }
+                Relationships: any[]
             }
         }
         Functions: {
@@ -49,6 +50,15 @@ export interface Database {
                 }
                 Returns: null
             }
+        }
+        Views: {
+            [_ in never]: never
+        }
+        Enums: {
+            [_ in never]: never
+        }
+        CompositeTypes: {
+            [_ in never]: never
         }
     }
 }

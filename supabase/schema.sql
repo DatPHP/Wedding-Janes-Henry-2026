@@ -1,58 +1,99 @@
--- supabase/schema.sql
--- Run this in the Supabase SQL Editor
+-- ============================================================
+-- LIVE WISHES SCHEMA — Wedding Janes & Henry 2026
+-- Chạy file này trong Supabase SQL Editor
+-- ============================================================
 
--- 1. Create the 'wishes' table
-CREATE TABLE IF NOT EXISTS public.wishes (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  created_at TIMESTAMPTZ DEFAULT now() NOT NULL,
-  name TEXT NOT NULL,
-  email TEXT,
-  phone TEXT,
-  relationship TEXT NOT NULL,
-  attending BOOLEAN DEFAULT true NOT NULL,
-  guest_count INT DEFAULT 1 NOT NULL,
-  message TEXT NOT NULL,
-  hearts INT DEFAULT 0 NOT NULL,
-  is_approved BOOLEAN DEFAULT false NOT NULL,
-  is_pinned BOOLEAN DEFAULT false NOT NULL
+-- Bảng lưu RSVP + lời chúc
+create table if not exists public.wishes (
+  id          uuid default gen_random_uuid() primary key,
+  created_at  timestamptz default now() not null,
+
+  -- Thông tin khách
+  name        text not null,
+  email       text,
+  phone       text,
+  relationship text not null default 'friend',
+                -- 'family' | 'friend' | 'relative' | 'colleague' | 'neighbor'
+
+  -- RSVP
+  attending   boolean not null default true,
+  guest_count integer not null default 1 check (guest_count between 1 and 10),
+
+  -- Lời chúc
+  message     text not null,
+
+  -- Moderation: chủ tiệc duyệt trước khi hiển thị (true = hiện, false = ẩn)
+  is_approved boolean not null default true,
+  -- Đặt default false nếu muốn duyệt thủ công:
+  -- is_approved boolean not null default false,
+
+  -- Pin lời chúc yêu thích lên đầu
+  is_pinned   boolean not null default false,
+
+  -- Reactions (số tim)
+  hearts      integer not null default 0 check (hearts >= 0)
 );
 
--- 2. Enable Row Level Security (RLS)
-ALTER TABLE public.wishes ENABLE ROW LEVEL SECURITY;
+-- Index để query nhanh
+create index if not exists wishes_created_at_idx on public.wishes (created_at desc);
+create index if not exists wishes_approved_idx   on public.wishes (is_approved, created_at desc);
+create index if not exists wishes_pinned_idx     on public.wishes (is_pinned desc, created_at desc);
 
--- 3. Create RLS Policies
--- Policy: Anyone can read approved wishes
-CREATE POLICY "Allow public read-only access for approved wishes"
-ON public.wishes FOR SELECT
-USING (is_approved = true);
+-- ============================================================
+-- ROW LEVEL SECURITY
+-- ============================================================
 
--- Policy: Anyone can insert a new wish
-CREATE POLICY "Allow public insert"
-ON public.wishes FOR INSERT
-WITH CHECK (true);
+alter table public.wishes enable row level security;
 
--- policy for admin to have full access (based on service_role) is default
+-- Ai cũng đọc được lời chúc đã duyệt
+create policy "Public read approved wishes"
+  on public.wishes for select
+  using (is_approved = true);
 
--- 4. Enable Realtime
--- Step 1: Add the table to the 'supabase_realtime' publication
--- If you haven't enabled realtime for any table yet, you might need to create the publication first,
--- but typically Supabase projects have it.
-ALTER PUBLICATION supabase_realtime ADD TABLE public.wishes;
+-- Ai cũng submit được (có thể thêm rate limiting ở API layer)
+create policy "Anyone can insert wishes"
+  on public.wishes for insert
+  with check (true);
 
--- 5. Create the increment_hearts function (RPC)
--- This allows incrementing hearts without giving update permission to the entire row
-CREATE OR REPLACE FUNCTION public.increment_hearts(wish_id UUID)
-RETURNS void
-LANGUAGE plpgsql
-SECURITY DEFINER -- Runs with the privileges of the creator (admin)
-AS $$
-BEGIN
-  UPDATE public.wishes
-  SET hearts = hearts + 1
-  WHERE id = wish_id;
-END;
+-- Chỉ service_role (admin) mới update/delete
+-- (dùng SUPABASE_SERVICE_ROLE_KEY ở server-side)
+create policy "Service role can update"
+  on public.wishes for update
+  using (auth.role() = 'service_role');
+
+create policy "Service role can delete"
+  on public.wishes for delete
+  using (auth.role() = 'service_role');
+
+-- ============================================================
+-- REALTIME: Bật realtime cho bảng wishes
+-- ============================================================
+
+-- Thêm bảng vào realtime publication
+alter publication supabase_realtime add table public.wishes;
+
+-- ============================================================
+-- FUNCTION: Tăng hearts an toàn (tránh race condition)
+-- ============================================================
+
+create or replace function increment_hearts(wish_id uuid)
+returns void
+language plpgsql
+security definer
+as $$
+begin
+  update public.wishes
+  set hearts = hearts + 1
+  where id = wish_id and is_approved = true;
+end;
 $$;
 
--- 6. Insert seed data (Optional/Testing)
--- INSERT INTO public.wishes (name, relationship, message, attending, guest_count)
--- VALUES ('Văn A', 'friend', 'Chúc hai bạn mãi hạnh phúc! 🎉', true, 2);
+-- ============================================================
+-- SEED DATA: Vài lời chúc mẫu để test
+-- ============================================================
+
+insert into public.wishes (name, relationship, attending, guest_count, message, is_pinned, hearts) values
+  ('Bố Mẹ Henry', 'family',    true, 2, 'Chúc hai con trăm năm hạnh phúc, vợ chồng hòa thuận, sớm có con cái đầy nhà! Ba mẹ rất vui khi thấy Henry tìm được người bạn đời tốt ❤️', true, 24),
+  ('Bố Mẹ Janes', 'family',    true, 2, 'Con gái mẹ xinh đẹp, hiền lành, ba mẹ tin Henry sẽ chăm sóc con thật tốt. Chúc các con hạnh phúc mãi mãi! 🌸', true, 19),
+  ('Nhóm bạn KL', 'friend',    true, 4, 'Từ hồi còn cùng nhau khám phá Kuala Lumpur đến nay đã thành hôn rồi! Congrats you two 🎉 Nhớ mời tụi mình tiệc nhé!', false, 12),
+  ('Chị Lan Anh',  'colleague', true, 1, 'Chúc mừng Henry và Janes! Làm việc cùng anh mấy năm mới biết anh là người chu đáo thế nào. Janes chọn đúng người rồi 😊', false, 8);
