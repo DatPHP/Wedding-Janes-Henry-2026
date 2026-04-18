@@ -71,6 +71,22 @@ export default function AdminPage() {
         }
     };
 
+    const deleteGuest = async (id: string, name: string) => {
+        if (!confirm(`Bạn có chắc muốn xóa "${name}" không?`)) return;
+        try {
+            const res = await fetch("/api/admin/forms", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id }),
+            });
+            if (!res.ok) throw new Error("Delete failed");
+            setGuests(prev => prev.filter(g => g.id !== id));
+            toast.success("Đã xóa.");
+        } catch {
+            toast.error("Không thể xóa.");
+        }
+    };
+
     const fetchMemories = async () => {
         try {
             setLoadingMemories(true);
@@ -235,12 +251,13 @@ export default function AdminPage() {
                                                 <th className="px-6 py-4 font-medium">Tham dự</th>
                                                 <th className="px-6 py-4 font-medium max-w-xs">Lời nhắn</th>
                                                 <th className="px-6 py-4 font-medium text-right">Thời gian</th>
+                                                <th className="px-6 py-4 font-medium text-center">Xóa</th>
                                             </tr>
                                         </thead>
                                         <tbody className="divide-y divide-neutral-200">
                                             {guests.length === 0 ? (
                                                 <tr>
-                                                    <td colSpan={6} className="px-6 py-8 text-center text-neutral-400">
+                                                    <td colSpan={7} className="px-6 py-8 text-center text-neutral-400">
                                                         Chưa có ai đăng ký. Hãy chờ một chút!
                                                     </td>
                                                 </tr>
@@ -252,11 +269,11 @@ export default function AdminPage() {
                                                         <td className="px-6 py-4 text-neutral-600">{row.relationship}</td>
                                                         <td className="px-6 py-4">
                                                             <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                                                                row.attendance === "Yes" ? "bg-emerald-100 text-emerald-800" :
-                                                                row.attendance === "No"  ? "bg-red-100 text-red-800" :
+                                                                row.attendance === "attend" ? "bg-emerald-100 text-emerald-800" :
+                                                                row.attendance === "online"  ? "bg-neutral-100 text-neutral-600" :
                                                                 "bg-amber-100 text-amber-800"
                                                             }`}>
-                                                                {row.attendance}
+                                                                {row.attendance === "attend" ? "✓ Tham dự" : "Vắng"}
                                                             </span>
                                                         </td>
                                                         <td className="px-6 py-4 text-neutral-600 max-w-xs truncate" title={row.message}>
@@ -267,6 +284,15 @@ export default function AdminPage() {
                                                                 year: "numeric", month: "short", day: "numeric",
                                                                 hour: "2-digit", minute: "2-digit",
                                                             })}
+                                                        </td>
+                                                        <td className="px-6 py-4 text-center">
+                                                            <button
+                                                                onClick={() => deleteGuest(row.id, row.name)}
+                                                                className="p-1.5 rounded-lg border border-neutral-200 text-neutral-400 hover:text-red-500 hover:bg-red-50 hover:border-red-200 transition-all"
+                                                                title="Xóa khách này"
+                                                            >
+                                                                <Trash2 className="w-4 h-4" />
+                                                            </button>
                                                         </td>
                                                     </tr>
                                                 ))

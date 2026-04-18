@@ -22,3 +22,17 @@ export async function GET() {
     return new Response("Server error", { status: 500 });
   }
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const { id } = await req.json();
+    if (!id) return new Response("Missing id", { status: 400 });
+
+    await sql`DELETE FROM wedding_guests WHERE id = ${id}`;
+    return Response.json({ success: true });
+  } catch (error) {
+    console.error("Admin forms DELETE error:", error);
+    return new Response("Server error", { status: 500 });
+  }
+}
+
