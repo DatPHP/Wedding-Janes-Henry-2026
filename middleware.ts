@@ -2,29 +2,41 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 
-export function middleware(req: NextRequest) {
-    // Chỉ bảo vệ các route bắt đầu bằng /admin hoặc /api/admin
-    // (Bỏ qua /app/api/admin nếu dùng cấu trúc App Router, quan trọng là pathname)
-    if (req.nextUrl.pathname.startsWith('/admin') || req.nextUrl.pathname.startsWith('/api/admin')) {
-        const auth = req.headers.get('authorization')
-        
-        // Basic Auth: admin:ADMIN_SECRET
-        const expected = 'Basic ' + Buffer.from(
-            `admin:${process.env.ADMIN_SECRET}`
-        ).toString('base64')
+const PUBLIC_PATHS = ['/admin/login', '/api/admin/login']
 
-        if (auth !== expected) {
-            return new NextResponse('Unauthorized', {
-                status: 401,
-                headers: { 'WWW-Authenticate': 'Basic realm="Admin"' },
-            })
+export function middleware(req: NextRequest) {
+    const { pathname } = req.nextUrl
+
+    // Allow public auth paths through without any check
+    if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
+        return NextResponse.next()
+    }
+
+    // Protect /admin pages — check for session cookie
+    if (pathname.startsWith('/admin')) {
+        const token = req.cookies.get('admin_session')?.value
+        const expected = process.env.ADMIN_SECRET
+
+        if (!token || token !== expected) {
+            const loginUrl = req.nextUrl.clone()
+            loginUrl.pathname = '/admin/login'
+            return NextResponse.redirect(loginUrl)
         }
     }
-    
+
+    // Protect /api/admin routes — return 401 JSON (no redirect for APIs)
+    if (pathname.startsWith('/api/admin')) {
+        const token = req.cookies.get('admin_session')?.value
+        const expected = process.env.ADMIN_SECRET
+
+        if (!token || token !== expected) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+    }
+
     return NextResponse.next()
 }
 
 export const config = {
-    // Matcher cho tất cả các sub-paths
     matcher: ['/admin/:path*', '/api/admin/:path*'],
 }

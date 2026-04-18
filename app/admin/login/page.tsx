@@ -12,7 +12,7 @@ export default function AdminLogin() {
   const login = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (!password) {
-      toast.error("Please enter a password");
+      toast.error("Vui lòng nhập mật khẩu");
       return;
     }
     
@@ -21,21 +21,22 @@ export default function AdminLogin() {
     try {
       const res = await fetch("/api/admin/login", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password }),
       });
 
       if (!res.ok) {
-        toast.error("Incorrect password");
+        const json = await res.json().catch(() => ({}));
+        toast.error(json.message ?? "Mật khẩu không đúng");
         setLoading(false);
         return;
       }
 
-      const data = await res.json();
-      localStorage.setItem("admin_token", data.token);
-      toast.success("Welcome back!");
+      // Cookie is set automatically by the API (HttpOnly).
+      toast.success("Chào mừng trở lại! 💍");
       router.push("/admin");
-    } catch (err) {
-      toast.error("An error occurred. Please try again.");
+    } catch {
+      toast.error("Đã có lỗi xảy ra. Vui lòng thử lại.");
       setLoading(false);
     }
   };
