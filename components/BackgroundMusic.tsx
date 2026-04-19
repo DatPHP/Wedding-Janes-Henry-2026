@@ -37,27 +37,28 @@ export default function BackgroundMusic() {
     };
 
     return (
-        <div className="fixed bottom-6 right-6 z-[100] flex flex-col items-center gap-2">
+        <div className="fixed bottom-8 left-6 z-[100] flex flex-col items-center gap-2">
             <button
                 onClick={togglePlay}
                 className="relative group flex items-center justify-center"
                 aria-label="Toggle background music"
             >
-                {/* Vinyl Disc Styling */}
+                {/* Vinyl Disc / Player Button Styling */}
                 <motion.div
                     animate={isPlaying ? { rotate: 360 } : { rotate: 0 }}
                     transition={isPlaying ? { repeat: Infinity, duration: 4, ease: "linear" } : { duration: 0.5 }}
-                    className={`w-14 h-14 bg-foreground rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.3)] border-2 border-accent/20 flex items-center justify-center relative overflow-hidden transition-all group-hover:scale-110`}
+                    className={`w-14 h-14 bg-white rounded-full shadow-[0_6px_24px_rgba(255,133,161,0.35)] border border-accent/20 flex items-center justify-center relative overflow-hidden transition-all group-hover:shadow-[0_8px_32px_rgba(255,133,161,0.55)] group-hover:scale-110 group-hover:border-accent/50 text-accent`}
                 >
-                    {/* Vinyl grooves effect */}
-                    <div className="absolute inset-0 border-[4px] border-white/5 rounded-full" />
-                    <div className="absolute inset-2 border-[1px] border-white/5 rounded-full" />
-                    <div className="absolute inset-4 border-[1px] border-white/5 rounded-full" />
-                    
-                    {/* Center Label */}
-                    <div className="w-4 h-4 bg-accent rounded-full border-2 border-[#111111] z-10 flex items-center justify-center">
-                        <div className="w-1 h-1 bg-white rounded-full" />
+                    {/* Play/Pause Icon instead of just grooves */}
+                    <div className="z-10 flex items-center justify-center">
+                        {isPlaying ? (
+                            <Music size={24} className="animate-pulse" />
+                        ) : (
+                            <Disc size={26} className="text-accent/80" />
+                        )}
                     </div>
+                    {/* Pink fill animation on hover (similar to ScrollToTop) */}
+                    <div className="absolute inset-0 bg-accent/5 scale-0 group-hover:scale-100 rounded-full transition-transform duration-300 origin-bottom" />
                 </motion.div>
 
                 {/* Floating Note indicator when playing */}
@@ -76,9 +77,8 @@ export default function BackgroundMusic() {
                 </AnimatePresence>
             </button>
             
-            {/* Minimal label (optional, can be removed for cleaner look) */}
-            <span className="text-[10px] uppercase tracking-widest text-muted font-medium bg-white/50 backdrop-blur-sm px-2 py-0.5 rounded-full border border-black/5 opacity-0 group-hover:opacity-100 transition-opacity">
-                {isPlaying ? "Playing" : "Music"}
+            <span className="text-[11px] uppercase tracking-wide text-accent/70 group-hover:text-accent font-medium bg-white/50 backdrop-blur-sm px-2 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                {isPlaying ? "Đang Phát" : "Phát Nhạc"}
             </span>
         </div>
     );
