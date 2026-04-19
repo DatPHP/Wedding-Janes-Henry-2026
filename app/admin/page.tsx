@@ -14,7 +14,6 @@ import {
     MessageSquareHeart,
 } from "lucide-react";
 import { toast } from "react-toastify";
-import { AdminWishesClient } from "@/components/wishes/AdminWishesClient";
 
 type WeddingForm = {
     id: string;
@@ -32,7 +31,7 @@ type Memory = {
     image_url: string;
 };
 
-type Tab = "guests" | "memories" | "wishes";
+type Tab = "guests" | "memories";
 
 export default function AdminPage() {
     const router = useRouter();
@@ -179,7 +178,6 @@ export default function AdminPage() {
     const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
         { id: "guests", label: "Khách mời", icon: <Users className="w-4 h-4" /> },
         { id: "memories", label: "Ký ức", icon: <ImageIcon className="w-4 h-4" /> },
-        { id: "wishes", label: "Lời chúc", icon: <MessageSquareHeart className="w-4 h-4" /> },
     ];
 
     return (
@@ -363,18 +361,6 @@ export default function AdminPage() {
                         </div>
                     )}
 
-                    {/* ── WISHES TAB ── */}
-                    {activeTab === "wishes" && (
-                        <div>
-                            <div className="mb-6">
-                                <h2 className="text-lg font-medium text-neutral-900">Quản lý lời chúc</h2>
-                                <p className="text-sm text-neutral-500 mt-1">
-                                    Duyệt, ghim hoặc xóa lời chúc từ khách mời. Chỉ lời chúc đã duyệt mới hiển thị công khai.
-                                </p>
-                            </div>
-                            <AdminWishesClient />
-                        </div>
-                    )}
                 </main>
             </div>
         </div>
