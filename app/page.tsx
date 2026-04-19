@@ -9,6 +9,7 @@ import BackgroundMusic from "@/components/BackgroundMusic";
 import FadeIn from "@/components/FadeIn";
 import NavBar from "@/components/NavBar";
 import ScrollToTop from "@/components/ScrollToTop";
+import FloatingActionMenu from "@/components/FloatingActionMenu";
 import { WishesSection } from '@/components/wishes/WishesSection'
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
       <BackgroundMusic />
       <NavBar />
       <ScrollToTop />
+      <FloatingActionMenu />
 
       <section id="greeting">
         <Hero />

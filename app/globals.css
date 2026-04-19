@@ -11,6 +11,9 @@ html {
   --muted: #4A4A4A;
   --accent: #FF85A1;
   --accent-light: #FFEBF0;
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --misty-overlay: radial-gradient(circle at center, transparent 0%, rgba(255, 245, 247, 0.4) 70%, rgba(255, 245, 247, 0.8) 100%);
 }
 
 @theme inline {
@@ -65,4 +68,34 @@ html {
 /* Marquee: speed controlled by --marquee-duration CSS var on the element */
 .animate-scroll-up {
   animation: scrollUp var(--marquee-duration, 30s) linear infinite;
+}
+
+/* ── Custom UI Utilities ── */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+
+.misty-vignette {
+  position: relative;
+}
+
+.misty-vignette::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--misty-overlay);
+  pointer-events: none;
+  z-index: 5;
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(5deg); }
+}
+
+.animate-float-slow {
+  animation: float-slow 8s ease-in-out infinite;
 }

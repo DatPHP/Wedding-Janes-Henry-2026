@@ -39,25 +39,33 @@ export default function Countdown() {
     }, []);
 
     return (
-        <section className="py-24 bg-gradient-to-b from-background to-[#FFF5F5] text-center px-4">
-            <h2 className="text-3xl md:text-5xl font-serif mb-16 text-black">
-                Đếm Ngược Tới Ngày Trọng Đại
-            </h2>
+        <section className="py-24 md:py-32 bg-gradient-to-b from-background via-[#FFF9FA] to-[#FFF5F5] text-center px-4 relative overflow-hidden">
+            {/* Background decorative blob */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-rose-100/30 rounded-full blur-[100px] pointer-events-none" />
 
-            <div className="flex justify-center gap-4 md:gap-8 flex-wrap max-w-4xl mx-auto">
-                {Object.entries(timeLeft).map(([label, value]) => (
-                    <div
-                        key={label}
-                        className="w-24 h-28 md:w-32 md:h-36 bg-white rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col items-center justify-center border border-accent/10 transition-transform duration-300 hover:-translate-y-2"
-                    >
-                        <span className="text-4xl md:text-5xl font-serif text-accent mb-2">
-                            {value}
-                        </span>
-                        <span className="text-xs md:text-sm uppercase tracking-widest text-muted font-medium">
-                            {label}
-                        </span>
-                    </div>
-                ))}
+            <div className="relative z-10">
+                <p className="text-xs tracking-[4px] uppercase text-rose-400 mb-4 font-medium">
+                    Save The Date
+                </p>
+                <h2 className="text-4xl md:text-5xl font-serif mb-16 text-black tracking-wide">
+                    Đếm Ngược Tới Ngày Trọng Đại
+                </h2>
+
+                <div className="flex justify-center gap-3 md:gap-8 flex-wrap max-w-4xl mx-auto">
+                    {Object.entries(timeLeft).map(([label, value]) => (
+                        <div
+                            key={label}
+                            className="w-22 h-26 md:w-36 md:h-40 glass rounded-[32px] md:rounded-[40px] shadow-[0_20px_50px_rgba(255,133,161,0.08)] flex flex-col items-center justify-center transition-all duration-500 hover:-translate-y-3 hover:shadow-[0_30px_60px_rgba(255,133,161,0.15)] group"
+                        >
+                            <span className="text-4xl md:text-6xl font-serif text-accent mb-1 md:mb-2 transition-transform duration-500 group-hover:scale-110">
+                                {value}
+                            </span>
+                            <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-neutral-400 font-semibold">
+                                {label}
+                            </span>
+                        </div>
+                    ))}
+                </div>
             </div>
         </section>
     );

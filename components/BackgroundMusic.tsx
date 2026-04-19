@@ -47,18 +47,18 @@ export default function BackgroundMusic() {
                 <motion.div
                     animate={isPlaying ? { rotate: 360 } : { rotate: 0 }}
                     transition={isPlaying ? { repeat: Infinity, duration: 4, ease: "linear" } : { duration: 0.5 }}
-                    className={`w-14 h-14 bg-white rounded-full shadow-[0_6px_24px_rgba(255,133,161,0.35)] border border-accent/20 flex items-center justify-center relative overflow-hidden transition-all group-hover:shadow-[0_8px_32px_rgba(255,133,161,0.55)] group-hover:scale-110 group-hover:border-accent/50 text-accent`}
+                    className={`w-12 h-12 md:w-14 md:h-14 bg-white/80 backdrop-blur-md rounded-full shadow-[0_10px_30px_rgba(255,133,161,0.25)] border border-white/40 flex items-center justify-center relative overflow-hidden transition-all group-hover:shadow-[0_15px_40px_rgba(255,133,161,0.4)] group-hover:scale-110 text-accent group-active:scale-95`}
                 >
                     {/* Play/Pause Icon instead of just grooves */}
                     <div className="z-10 flex items-center justify-center">
                         {isPlaying ? (
-                            <Music size={24} className="animate-pulse" />
+                            <Music size={20} className="md:w-6 md:h-6 animate-pulse" />
                         ) : (
-                            <Disc size={26} className="text-accent/80" />
+                            <Disc size={22} className="md:w-7 md:h-7 text-accent/80" />
                         )}
                     </div>
-                    {/* Pink fill animation on hover (similar to ScrollToTop) */}
-                    <div className="absolute inset-0 bg-accent/5 scale-0 group-hover:scale-100 rounded-full transition-transform duration-300 origin-bottom" />
+                    {/* Inner gold ring */}
+                    <div className="absolute inset-[3px] border border-accent/10 rounded-full" />
                 </motion.div>
 
                 {/* Floating Note indicator when playing */}

@@ -120,7 +120,7 @@ function AvatarMedallion({
 export default function Hero() {
   return (
     <section
-      className="min-h-screen flex flex-col items-center justify-center text-center px-2 md:px-6 pt-20 pb-10 relative overflow-hidden"
+      className="min-h-screen flex flex-col items-center justify-center text-center px-4 md:px-6 pt-24 pb-16 relative overflow-hidden misty-vignette"
       style={{
         background:
           "linear-gradient(160deg, #FFF5F7 0%, #FFFFFF 40%, #FFFBF0 70%, #FFF0F5 100%)",
@@ -140,6 +140,10 @@ export default function Hero() {
           opacity: 0;
           pointer-events: none;
           z-index: 10;
+          filter: blur(0.5px);
+        }
+        .petal-wrapper svg {
+          filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
         }
       `}</style>
       
@@ -268,21 +272,24 @@ export default function Hero() {
       </div>
 
       {/* ── Couple photo below ── */}
-      <div className="mt-10 md:mt-14 w-full max-w-md mx-auto mb-6 md:mb-8">
+      <div className="mt-14 md:mt-20 w-full max-w-lg mx-auto mb-10 md:mb-12 animate-float-slow">
         <div
-          className="rounded-[28px] overflow-hidden"
+          className="rounded-[40px] overflow-hidden relative group"
           style={{
             boxShadow:
-              "0 4px 6px rgba(201,169,110,0.15), 0 20px 60px rgba(255,133,161,0.22)",
-            border: "2px solid rgba(201,169,110,0.25)",
+              "0 4px 6px rgba(201,169,110,0.1), 0 30px 80px rgba(255,133,161,0.25)",
+            border: "6px solid white",
           }}
         >
+          {/* Frosted inner border */}
+          <div className="absolute inset-0 border-[1px] border-accent/20 rounded-[34px] z-10 pointer-events-none" />
+          
           <Image
             src="/images/couple-1.jpg"
-            alt="Janes &amp; Henry — Together"
+            alt="Janes & Henry — Together"
             width={800}
             height={1000}
-            className="w-full object-cover"
+            className="w-full object-cover transition-transform duration-1000 group-hover:scale-105"
             priority
           />
         </div>

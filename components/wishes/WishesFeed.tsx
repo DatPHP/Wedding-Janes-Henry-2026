@@ -68,10 +68,10 @@ function WishCard({ guest }: { guest: GuestMessage }) {
     const attending = guest.attendance === 'attend'
 
     return (
-        <div className="flex gap-3 px-5 py-4 rounded-2xl border border-neutral-100 bg-white shadow-sm">
+        <div className="flex gap-4 px-6 py-5 rounded-[24px] border border-white/40 bg-white/60 backdrop-blur-sm shadow-[0_8px_30px_rgb(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_15px_40px_rgba(255,133,161,0.12)] hover:-translate-y-1">
             {/* Avatar */}
             <div
-                className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-semibold select-none"
+                className="flex-shrink-0 w-11 h-11 rounded-full flex items-center justify-center text-[14px] font-bold select-none shadow-sm border-2 border-white"
                 style={{ background: avatar.bg, color: avatar.text }}
             >
                 {getInitials(guest.name)}
@@ -79,19 +79,19 @@ function WishCard({ guest }: { guest: GuestMessage }) {
 
             {/* Body */}
             <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                    <span className="text-[13px] font-semibold text-neutral-900 truncate">
+                <div className="flex items-center gap-2 flex-wrap mb-2">
+                    <span className="text-[14px] font-bold text-neutral-800">
                         {guest.name}
                     </span>
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${relColor.bg} ${relColor.text}`}>
+                    <span className={`text-[10px] px-2.5 py-0.5 rounded-full font-semibold ${relColor.bg} ${relColor.text} border border-current shadow-sm`}>
                         {label}
                     </span>
                     {attending
-                        ? <span className="text-[10px] px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium">✓ Tham dự</span>
-                        : <span className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-500 font-medium">Vắng</span>
+                        ? <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-600 font-semibold border border-emerald-100 shadow-sm">✓ Tham dự</span>
+                        : <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-neutral-50 text-neutral-400 font-semibold border border-neutral-100 shadow-sm">Vắng</span>
                     }
                 </div>
-                <p className="text-[13px] text-neutral-600 leading-relaxed line-clamp-3">
+                <p className="text-[14px] text-neutral-600 leading-relaxed font-light">
                     {guest.message}
                 </p>
             </div>
