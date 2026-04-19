@@ -11,10 +11,10 @@ export default function DigitalGifting() {
         <section className="py-24 bg-accent-light text-center px-6">
             <div className="max-w-2xl mx-auto">
                 <h2 className="text-3xl md:text-5xl font-serif mb-6 text-black">
-                    Send Wishes & Gifts
+                    Gửi Quà Mừng & Lời Chúc
                 </h2>
                 <p className="text-muted mb-10 text-lg">
-                    Your presence at our wedding is the greatest gift of all. However, should you wish to help us celebrate with a physical gift, a digital contribution would be warmly appreciated.
+                    Sự hiện diện của bạn đã là món quà tuyệt vời nhất dành cho chúng tôi. Tuy nhiên, nếu bạn muốn gửi trao một món quà cưới để chung vui, vui lòng sử dụng thông tin chuyển khoản dưới đây.
                 </p>
 
                 <button
@@ -22,7 +22,7 @@ export default function DigitalGifting() {
                     className="inline-flex items-center gap-3 bg-accent text-white px-8 py-4 rounded-full hover:brightness-110 hover:shadow-xl hover:-translate-y-1 transition-all"
                 >
                     <Gift size={20} />
-                    <span className="font-medium">Digital Gifting</span>
+                    <span className="font-medium">Mừng Cưới Online</span>
                 </button>
             </div>
 
@@ -49,8 +49,8 @@ export default function DigitalGifting() {
                                 <X size={20} />
                             </button>
 
-                            <h3 className="text-2xl font-serif text-accent mb-2">Thank You</h3>
-                            <p className="text-sm text-muted mb-8">Scan the QR code below using your banking app</p>
+                            <h3 className="text-2xl font-serif text-accent mb-2">Xin Chân Thành Cảm Ơn</h3>
+                            <p className="text-sm text-muted mb-8">Quét mã QR dưới đây bằng ứng dụng ngân hàng</p>
 
                             <div className="aspect-square bg-background rounded-2xl flex items-center justify-center p-8 border border-accent/20 mb-6">
                                 {/* Placeholder for absolute an actual Bank VietQR image */}
@@ -63,7 +63,7 @@ export default function DigitalGifting() {
                                     <p className="text-sm text-muted">4562587</p>
                                 </div>
                             </div>
-                            <p className="text-xs text-muted">With all our love and appreciation.</p>
+                            <p className="text-xs text-muted">Với lòng biết ơn và tình yêu thương sâu sắc.</p>
                         </motion.div>
                     </div>
                 )}

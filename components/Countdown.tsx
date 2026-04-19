@@ -13,20 +13,20 @@ export default function Countdown() {
 
         if (distance <= 0) {
             return {
-                days: 0,
-                hours: 0,
-                minutes: 0,
-                seconds: 0,
+                "Ngày": 0,
+                "Giờ": 0,
+                "Phút": 0,
+                "Giây": 0,
             };
         }
 
         return {
-            days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-            hours: Math.floor(
+            "Ngày": Math.floor(distance / (1000 * 60 * 60 * 24)),
+            "Giờ": Math.floor(
                 (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
             ),
-            minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-            seconds: Math.floor((distance % (1000 * 60)) / 1000),
+            "Phút": Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+            "Giây": Math.floor((distance % (1000 * 60)) / 1000),
         };
     }
 
@@ -41,7 +41,7 @@ export default function Countdown() {
     return (
         <section className="py-24 bg-gradient-to-b from-background to-[#FFF5F5] text-center px-4">
             <h2 className="text-3xl md:text-5xl font-serif mb-16 text-black">
-                Countdown To Our Big Day
+                Đếm Ngược Tới Ngày Trọng Đại
             </h2>
 
             <div className="flex justify-center gap-4 md:gap-8 flex-wrap max-w-4xl mx-auto">

@@ -20,7 +20,7 @@ export default function ScrollToTop() {
   return (
     <button
       onClick={scrollToTop}
-      aria-label="Scroll back to top"
+      aria-label="Cuộn lên đầu trang"
       className={`fixed bottom-8 right-6 z-50 group flex flex-col items-center gap-1 transition-all duration-500 ${
         visible ? "opacity-100 translate-y-0 pointer-events-auto" : "opacity-0 translate-y-8 pointer-events-none"
       }`}
@@ -42,7 +42,7 @@ export default function ScrollToTop() {
 
       {/* Label */}
       <span className="text-[11px] font-medium tracking-wide text-accent/70 group-hover:text-accent transition-colors duration-200 whitespace-nowrap">
-        Back to Top
+        Lên Đầu Trang
       </span>
     </button>
   );

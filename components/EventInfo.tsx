@@ -16,10 +16,10 @@ export default function EventInfo() {
             <div className="relative z-10 max-w-4xl mx-auto">
                 <div className="mb-16">
                     <h2 className="text-4xl md:text-5xl font-serif text-foreground mb-4">
-                        Wedding Event
+                        Chương Trình Lễ Cưới
                     </h2>
                     <p className="text-accent font-serif italic text-xl tracking-wide">
-                        We can't wait to celebrate with you
+                        Sự hiện diện của bạn là niềm vinh hạnh cho chúng tôi
                     </p>
                 </div>
 
@@ -33,19 +33,19 @@ export default function EventInfo() {
                             <CalendarHeart size={28} strokeWidth={1.5} />
                         </div>
                         
-                        <h3 className="text-3xl font-serif text-foreground mb-2 group-hover:text-accent transition-colors duration-300">Ceremony</h3>
-                        <p className="text-accent/80 text-xs font-semibold tracking-widest uppercase mb-6">The Vows</p>
+                        <h3 className="text-3xl font-serif text-foreground mb-2 group-hover:text-accent transition-colors duration-300">Lễ Thành Hôn</h3>
+                        <p className="text-accent/80 text-xs font-semibold tracking-widest uppercase mb-6">Trao Lời Thề Nguyện</p>
                         
                         <div className="space-y-4 text-muted flex-grow">
-                            <p className="text-lg font-medium text-foreground">06 December 2026</p>
-                            <p>10:00 AM - 11:30 AM</p>
+                            <p className="text-lg font-medium text-foreground">06 Tháng 12 2026</p>
+                            <p>10:00 Sáng - 11:30 Sáng</p>
                             <div className="w-16 h-[2px] bg-gradient-to-r from-transparent via-accent/40 to-transparent mx-auto my-6"></div>
-                            <p className="font-medium text-foreground text-lg">Phu Cat, Binh Dinh</p>
-                            <p className="text-sm italic">Janes's hometown</p>
+                            <p className="font-medium text-foreground text-lg">Phù Cát, Bình Định</p>
+                            <p className="text-sm italic">Quê của Janes</p>
                         </div>
                         
                         <a href={binhDinhMap} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center justify-center gap-2 text-sm font-semibold text-accent hover:text-white transition-all duration-300 w-full px-6 py-4 bg-white border border-accent/20 rounded-full hover:bg-accent hover:border-accent hover:shadow-lg hover:shadow-accent/30 group-hover:bg-accent/5">
-                            <MapPin size={18} /> Location Map
+                            <MapPin size={18} /> Xem Bản Đồ
                         </a>
                     </div>
 
@@ -58,19 +58,19 @@ export default function EventInfo() {
                             <CalendarHeart size={28} strokeWidth={1.5} />
                         </div>
                         
-                        <h3 className="text-3xl font-serif text-foreground mb-2 group-hover:text-accent transition-colors duration-300">Reception</h3>
-                        <p className="text-accent/80 text-xs font-semibold tracking-widest uppercase mb-6">The Celebration</p>
+                        <h3 className="text-3xl font-serif text-foreground mb-2 group-hover:text-accent transition-colors duration-300">Tiệc Cưới</h3>
+                        <p className="text-accent/80 text-xs font-semibold tracking-widest uppercase mb-6">Tiệc Mừng Hạnh Phúc</p>
                         
                         <div className="space-y-4 text-muted flex-grow">
-                            <p className="text-lg font-medium text-foreground">06 December 2026</p>
-                            <p>6:00 PM - Late</p>
+                            <p className="text-lg font-medium text-foreground">06 Tháng 12 2026</p>
+                            <p>6:00 Tối - 9:00 Tối</p>
                             <div className="w-16 h-[2px] bg-gradient-to-r from-transparent via-accent/40 to-transparent mx-auto my-6"></div>
-                            <p className="font-medium text-foreground text-lg">Thuan An, Binh Duong</p>
-                            <p className="text-sm italic">Henry's hometown</p>
+                            <p className="font-medium text-foreground text-lg">Thuận An, Bình Dương</p>
+                            <p className="text-sm italic">Quê của Henry</p>
                         </div>
                         
                         <a href={binhDuongMap} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center justify-center gap-2 text-sm font-semibold text-accent hover:text-white transition-all duration-300 w-full px-6 py-4 bg-white border border-accent/20 rounded-full hover:bg-accent hover:border-accent hover:shadow-lg hover:shadow-accent/30 group-hover:bg-accent/5">
-                            <MapPin size={18} /> Location Map
+                            <MapPin size={18} /> Xem Bản Đồ
                         </a>
                     </div>
                 </div>
@@ -82,7 +82,7 @@ export default function EventInfo() {
                     className="inline-flex items-center gap-3 bg-accent text-white px-10 py-4 rounded-full font-medium hover:bg-accent/90 hover:shadow-[0_10px_25px_rgb(255,133,161,0.35)] hover:-translate-y-1 transition-all duration-300"
                 >
                     <CalendarHeart size={20} />
-                    <span>Save the Date</span>
+                    <span>Lưu Lịch Trình</span>
                 </a>
             </div>
         </section>

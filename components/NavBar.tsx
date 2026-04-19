@@ -3,13 +3,13 @@
 import { useState, useEffect } from "react";
 
 const navLinks = [
-  { label: "Greeting", href: "#greeting" },
-  { label: "Countdown", href: "#countdown" },
-  { label: "Memories", href: "#memories" },
-  { label: "Our Love Journey", href: "#story" },
-  { label: "Send Your Wishes", href: "#wishes" },
-  { label: "Wedding Event", href: "#event" },
-  { label: "Gift", href: "#gift" },
+  { label: "Lời Ngỏ", href: "#greeting" },
+  { label: "Đếm Ngược", href: "#countdown" },
+  { label: "Kỷ Niệm", href: "#memories" },
+  { label: "Chuyện Tình Yêu", href: "#story" },
+  { label: "Gửi Lời Chúc", href: "#wishes" },
+  { label: "Sự Kiện Lễ Cưới", href: "#event" },
+  { label: "Gửi Quà Mừng", href: "#gift" },
 ];
 
 export default function NavBar() {

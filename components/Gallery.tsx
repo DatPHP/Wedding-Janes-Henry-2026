@@ -43,7 +43,7 @@ export default function Gallery() {
         <section className="py-24 px-6 bg-gradient-to-b from-background to-accent-light">
             <div className="max-w-6xl mx-auto">
                 <h2 className="text-4xl md:text-5xl font-serif text-center mb-16 text-black">
-                    Memories
+                    Khoảnh Khắc Đáng Nhớ
                 </h2>
 
                 <div className="relative group/carousel">

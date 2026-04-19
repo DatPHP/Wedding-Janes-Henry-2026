@@ -171,10 +171,10 @@ export default function Hero() {
 
       {/* ── "We are getting married" label ── */}
       <p
-        className="uppercase tracking-[0.25em] md:tracking-[0.35em] text-[10px] md:text-sm font-medium mb-6 md:mb-8"
+        className="uppercase tracking-[0.15em] md:tracking-[0.25em] text-[10px] md:text-sm font-medium mb-6 md:mb-8"
         style={{ color: "#C9A96E" }}
       >
-        We Are Getting Married
+        Thân Mời Tham Dự Lễ Cưới
       </p>
 
       {/* ── Three-column hero: avatar | title | avatar (always 3 cols) ── */}
@@ -236,9 +236,9 @@ export default function Hero() {
               opacity: 0.9,
             }}
           >
-            &ldquo;Two souls with but a single thought,
+            &ldquo;Trăm năm tình viên mãn,
             <br />
-            two hearts that beat as one.&rdquo;
+            bạc đầu nghĩa phu thê.&rdquo;
           </p>
 
           <Ornament />
@@ -252,7 +252,7 @@ export default function Hero() {
               opacity: 0.85,
             }}
           >
-            December 06, 2026
+            Ngày 06 tháng 12 năm 2026
           </p>
         </div>
 

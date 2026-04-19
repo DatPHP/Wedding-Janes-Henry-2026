@@ -7,11 +7,11 @@ import { toast } from "react-toastify";
 import { z } from "zod";
 
 const rsvpSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  phone: z.string().regex(/^0\d{9}$/, "Phone number must be 10 digits and begin with a zero."),
-  relationship: z.string().min(1, "Relationship is required"),
+  name: z.string().min(1, "Vui lòng nhập họ và tên"),
+  phone: z.string().regex(/^0\d{9}$/, "Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0."),
+  relationship: z.string().min(1, "Vui lòng chọn mối quan hệ"),
   message: z.string().optional().default(""),
-  attendance: z.string().min(1, "Attendance is required"),
+  attendance: z.string().min(1, "Vui lòng chọn xác nhận tham dự"),
 });
 
 
@@ -64,10 +64,10 @@ export default function RsvpForm() {
           attendance: "attend",
         });
       } else {
-        toast.error(data.error || "Submission failed. Please try again.");
+        toast.error(data.error || "Gửi thất bại. Vui lòng thử lại.");
       }
     } catch (error) {
-      toast.error("Network error. Please check your connection.");
+      toast.error("Lỗi mạng. Vui lòng kiểm tra kết nối internet.");
     }
 
     setLoading(false);
@@ -93,7 +93,7 @@ export default function RsvpForm() {
           <div>
             <input
               name="name"
-              placeholder="Your Name"
+              placeholder="Họ và Tên"
               value={form.name}
               onChange={handleChange}
               required
@@ -104,7 +104,7 @@ export default function RsvpForm() {
             <input
               name="phone"
               type="tel"
-              placeholder="Phone Number"
+              placeholder="Số Điện Thoại"
               value={form.phone}
               onChange={handleChange}
               required
@@ -120,19 +120,19 @@ export default function RsvpForm() {
               required
               className="w-full bg-background/50 border border-muted/20 rounded-2xl px-6 py-4 outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all text-black appearance-none"
             >
-              <option value="">Relationship</option>
-              <option>Family</option>
-              <option>Friend</option>
-              <option>Relative</option>
-              <option>Colleague</option>
-              <option>Neighbor</option>
+              <option value="">Mối Quan Hệ</option>
+              <option value="Family">Gia đình</option>
+              <option value="Friend">Bạn bè</option>
+              <option value="Relative">Họ hàng</option>
+              <option value="Colleague">Đồng nghiệp</option>
+              <option value="Neighbor">Hàng xóm</option>
             </select>
           </div>
 
           <div>
             <textarea
               name="message"
-              placeholder="A message for Janes & Henry..."
+              placeholder="Gửi lời chúc đến Janes & Henry..."
               value={form.message}
               onChange={handleChange}
               className="w-full bg-background/50 border border-muted/20 rounded-2xl px-6 py-4 outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all min-h-[120px] text-black resize-none"
@@ -152,7 +152,7 @@ export default function RsvpForm() {
                 onChange={handleChange}
                 className="hidden"
               />
-              <span className="text-black">Joyfully Accept</span>
+              <span className="text-black">Sẵn Sàng Tham Dự</span>
             </label>
 
             <label className="flex items-center gap-3 cursor-pointer group">
@@ -167,7 +167,7 @@ export default function RsvpForm() {
                 onChange={handleChange}
                 className="hidden"
               />
-              <span className="text-black">Regretfully Decline</span>
+              <span className="text-black">Xin Phép Vắng Mặt</span>
             </label>
           </div>
 
@@ -175,7 +175,7 @@ export default function RsvpForm() {
             disabled={loading}
             className="w-full bg-accent text-white py-4 rounded-2xl font-medium tracking-wide hover:brightness-110 hover:-translate-y-1 transition-all focus:ring-2 focus:ring-accent focus:ring-offset-2 disabled:opacity-70 disabled:cursor-not-allowed shadow-lg shadow-accent/20"
           >
-            {loading ? "Sending..." : "Confirm RSVP"}
+            {loading ? "Đang Gửi..." : "Xác Nhận"}
           </button>
         </form>
       </div>
@@ -207,13 +207,13 @@ export default function RsvpForm() {
                     <Heart className="text-accent fill-accent animate-pulse" size={32} />
                 </div>
 
-                <h3 className="text-3xl font-serif text-accent mb-4">Thank You!</h3>
+                <h3 className="text-3xl font-serif text-accent mb-4">Cảm Ơn Bạn!</h3>
                 <p className="text-lg text-muted mb-8">
-                  Your response has been received. We are so grateful for your love and support!
+                  Xác nhận của bạn đã được gửi thành công. Sự yêu thương của bạn là thước đo hạnh phúc của chúng tôi!
                 </p>
 
                 <p className="font-script text-2xl text-accent/80">
-                  With love, Janes & Henry
+                  Với trọn tình yêu, Janes & Henry
                 </p>
             </motion.div>
           </div>

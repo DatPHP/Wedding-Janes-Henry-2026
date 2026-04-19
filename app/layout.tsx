@@ -22,7 +22,7 @@ const greatVibes = Great_Vibes({
 
 export const metadata: Metadata = {
   title: "Janes & Henry",
-  description: "Wedding of Janes & Henry",
+  description: "Lễ Cưới Của Janes & Henry",
 };
 
 export default function RootLayout({
@@ -31,7 +31,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="vi">
       <body
         className={`${inter.variable} ${playfair.variable} ${greatVibes.variable} font-sans antialiased bg-background text-black transition-colors duration-300`}
       >
