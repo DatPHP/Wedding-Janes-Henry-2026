@@ -141,7 +141,7 @@ export function WishesFeed() {
     const doubled  = [...guests, ...guests]
 
     return (
-        <div className="w-full h-full flex flex-col gap-4">
+        <div className="w-full flex flex-col gap-4">
             {/* Header */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -160,8 +160,8 @@ export function WishesFeed() {
 
             {/* Viewport */}
             <div
-                className="relative overflow-hidden flex-1 rounded-2xl border border-neutral-200 dark:border-neutral-800"
-                style={{ minHeight: '480px' }}
+                className="relative overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800"
+                style={{ height: '480px' }}
                 onMouseEnter={() => setPaused(true)}
                 onMouseLeave={() => setPaused(false)}
                 onTouchStart={() => setPaused(true)}

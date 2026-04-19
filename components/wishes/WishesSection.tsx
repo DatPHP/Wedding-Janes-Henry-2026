@@ -26,15 +26,15 @@ export function WishesSection() {
                 </div>
 
                 {/* 2-column layout */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
 
                     {/* Left: RSVP form (existing, unchanged) */}
-                    <div className="h-full">
+                    <div>
                         <RsvpForm />
                     </div>
 
                     {/* Right: Live scrolling wishes */}
-                    <div className="pt-0 lg:pt-3 h-full">
+                    <div className="pt-0 lg:pt-3">
                         <WishesFeed />
                     </div>
 
