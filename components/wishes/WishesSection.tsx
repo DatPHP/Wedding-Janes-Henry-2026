@@ -34,7 +34,7 @@ export function WishesSection() {
                     </div>
 
                     {/* Right: Live scrolling wishes */}
-                    <div className="pt-0 lg:pt-3">
+                    <div className="pt-0 lg:mt-[130px]">
                         <WishesFeed />
                     </div>
 
