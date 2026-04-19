@@ -75,12 +75,12 @@ export default function RsvpForm() {
 
   return (
     <div className="w-full relative">
-      <div className="w-full bg-white dark:bg-neutral-900 p-8 md:p-10 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-neutral-100 dark:border-neutral-800 relative z-10">
+      <div className="w-full bg-white p-8 md:p-10 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-neutral-100 relative z-10">
         <div className="text-center mb-10">
           <p className="text-xs tracking-[3px] uppercase text-rose-400 mb-3">
             ✦ Gửi lời chúc ✦
           </p>
-          <h2 className="text-4xl font-serif text-neutral-900 dark:text-neutral-100 mb-4">
+          <h2 className="text-4xl font-serif text-neutral-900 mb-4">
             Chúng tôi trân trọng sự hiện diện của bạn
           </h2>
           <p className="text-neutral-500 max-w-lg mx-auto text-sm leading-relaxed">

@@ -68,7 +68,7 @@ function WishCard({ guest }: { guest: GuestMessage }) {
     const attending = guest.attendance === 'attend'
 
     return (
-        <div className="flex gap-3 px-5 py-4 rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm">
+        <div className="flex gap-3 px-5 py-4 rounded-2xl border border-neutral-100 bg-white shadow-sm">
             {/* Avatar */}
             <div
                 className="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-[13px] font-semibold select-none"
@@ -80,7 +80,7 @@ function WishCard({ guest }: { guest: GuestMessage }) {
             {/* Body */}
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                    <span className="text-[13px] font-semibold text-neutral-900 dark:text-neutral-100 truncate">
+                    <span className="text-[13px] font-semibold text-neutral-900 truncate">
                         {guest.name}
                     </span>
                     <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${relColor.bg} ${relColor.text}`}>
@@ -91,7 +91,7 @@ function WishCard({ guest }: { guest: GuestMessage }) {
                         : <span className="text-[10px] px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-500 font-medium">Vắng</span>
                     }
                 </div>
-                <p className="text-[13px] text-neutral-600 dark:text-neutral-300 leading-relaxed line-clamp-3">
+                <p className="text-[13px] text-neutral-600 leading-relaxed line-clamp-3">
                     {guest.message}
                 </p>
             </div>
@@ -149,7 +149,7 @@ export function WishesFeed() {
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500" />
                     </span>
-                    <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                    <span className="text-sm font-medium text-neutral-700">
                         Lời chúc từ khách mời
                     </span>
                 </div>
@@ -160,7 +160,7 @@ export function WishesFeed() {
 
             {/* Viewport */}
             <div
-                className="relative overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800"
+                className="relative overflow-hidden rounded-2xl border border-neutral-200 bg-white"
                 style={{ height: '480px' }}
                 onMouseEnter={() => setPaused(true)}
                 onMouseLeave={() => setPaused(false)}

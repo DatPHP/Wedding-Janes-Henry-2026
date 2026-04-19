@@ -9,7 +9,7 @@ import { WishesFeed } from './WishesFeed'
 
 export function WishesSection() {
     return (
-        <section className="w-full bg-white dark:bg-neutral-950 py-20 px-4" id="wishes">
+        <section className="w-full bg-white py-20 px-4" id="wishes">
             <div className="max-w-6xl mx-auto">
 
                 {/* Section heading */}
@@ -17,7 +17,7 @@ export function WishesSection() {
                     <p className="text-xs tracking-[3px] uppercase text-rose-400 mb-3">
                         ✦ RSVP & Lời chúc ✦
                     </p>
-                    <h2 className="text-4xl font-serif text-neutral-900 dark:text-neutral-100 mb-4">
+                    <h2 className="text-4xl font-serif text-neutral-900 mb-4">
                         Xác nhận & Gửi lời chúc
                     </h2>
                     <p className="text-neutral-500 max-w-lg mx-auto text-sm leading-relaxed">
