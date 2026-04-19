@@ -1,4 +1,24 @@
+"use client";
+
 import Image from "next/image";
+import { motion } from "framer-motion";
+
+const petals = [
+  { id: 1, left: "10%", delay: "0s", duration: "12s", scale: 1 },
+  { id: 2, left: "25%", delay: "2s", duration: "14s", scale: 0.8 },
+  { id: 3, left: "45%", delay: "4s", duration: "10s", scale: 1.2 },
+  { id: 4, left: "65%", delay: "1s", duration: "15s", scale: 0.9 },
+  { id: 5, left: "85%", delay: "5s", duration: "13s", scale: 1.1 },
+  { id: 6, left: "15%", delay: "6s", duration: "16s", scale: 0.7 },
+  { id: 7, left: "75%", delay: "3s", duration: "11s", scale: 1.3 },
+  { id: 8, left: "35%", delay: "7s", duration: "14s", scale: 0.85 },
+];
+
+const PetalSVG = () => (
+  <svg viewBox="0 0 30 30" xmlns="http://www.w3.org/2000/svg" className="w-full h-full" fill="currentColor">
+    <path d="M15,0 C10,-2 2,5 5,15 C8,25 15,30 20,25 C25,20 28,10 20,5 C15,0 15,0 15,0 Z" />
+  </svg>
+);
 
 /* ─── Decorative SVG ornament ─────────────────────────────────────────────── */
 function Ornament() {
@@ -106,6 +126,39 @@ export default function Hero() {
           "linear-gradient(160deg, #FFF5F7 0%, #FFFFFF 40%, #FFFBF0 70%, #FFF0F5 100%)",
       }}
     >
+      <style>{`
+        @keyframes floatPetal {
+          0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
+          10% { opacity: 0.5; }
+          90% { opacity: 0.5; }
+          100% { transform: translateY(110vh) translateX(40px) rotate(360deg); opacity: 0; }
+        }
+        .petal-wrapper {
+          position: absolute;
+          top: -10%;
+          animation: floatPetal linear infinite;
+          opacity: 0;
+          pointer-events: none;
+          z-index: 10;
+        }
+      `}</style>
+      
+      {/* ── Petals layer ── */}
+      {petals.map((petal) => (
+        <div
+          key={petal.id}
+          className="petal-wrapper w-3 h-3 md:w-5 md:h-5 text-rose-300 drop-shadow-sm"
+          style={{
+            left: petal.left,
+            animationDuration: petal.duration,
+            animationDelay: petal.delay,
+            transform: `scale(${petal.scale})`,
+          }}
+        >
+          <PetalSVG />
+        </div>
+      ))}
+
       {/* Subtle background petal blobs */}
       <div
         className="absolute top-10 left-[-80px] w-72 h-72 rounded-full opacity-[0.07] pointer-events-none"
@@ -141,14 +194,37 @@ export default function Hero() {
           <Ornament />
 
           <h1
-            className="font-serif font-light mt-2 md:mt-4 mb-2 md:mb-3 leading-tight"
+            className="font-serif font-light mt-2 md:mt-4 mb-2 md:mb-3 leading-tight flex justify-center items-center gap-3 md:gap-4 flex-wrap"
             style={{
               fontSize: "clamp(1.6rem, 6vw, 5.5rem)",
               color: "#3B1C2C",
               letterSpacing: "0.02em",
             }}
           >
-            Janes &amp; Henry
+            <motion.span
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.3 }}
+              className="inline-block"
+            >
+              Janes
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.6 }}
+              className="inline-block text-[0.8em]"
+            >
+              &amp;
+            </motion.span>
+            <motion.span
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, delay: 0.9 }}
+              className="inline-block"
+            >
+              Henry
+            </motion.span>
           </h1>
 
           {/* Script quote */}

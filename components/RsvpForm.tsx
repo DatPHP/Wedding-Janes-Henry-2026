@@ -74,14 +74,20 @@ export default function RsvpForm() {
   };
 
   return (
-    <section className="py-24 px-6 bg-accent-light relative">
-      <div className="max-w-xl mx-auto bg-white p-8 md:p-12 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-accent/10 relative z-10">
-        <h2 className="text-3xl md:text-5xl font-serif text-center mb-8 text-black">
-          Send Your Wishes
-        </h2>
-        <p className="text-center text-black/80 mb-10">
-          We would be honored to have you celebrate our special day with us.
-        </p>
+    <div className="w-full relative">
+      <div className="w-full bg-white dark:bg-neutral-900 p-8 md:p-10 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-neutral-100 dark:border-neutral-800 relative z-10">
+        <div className="text-center mb-10">
+          <p className="text-xs tracking-[3px] uppercase text-rose-400 mb-3">
+            ✦ Gửi lời chúc ✦
+          </p>
+          <h2 className="text-4xl font-serif text-neutral-900 dark:text-neutral-100 mb-4">
+            Chúng tôi trân trọng sự hiện diện của bạn
+          </h2>
+          <p className="text-neutral-500 max-w-lg mx-auto text-sm leading-relaxed">
+            Điền thông tin xác nhận tham dự và để lại lời chúc. Lời chúc của bạn sẽ
+            xuất hiện ngay lập tức trên trang này.
+          </p>
+        </div>
 
         <form onSubmit={submitForm} className="space-y-6">
           <div>
@@ -213,6 +219,6 @@ export default function RsvpForm() {
           </div>
         )}
       </AnimatePresence>
-    </section>
+    </div>
   );
 }
