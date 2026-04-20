@@ -120,7 +120,7 @@ function AvatarMedallion({
 export default function Hero() {
   return (
     <section
-      className="min-h-screen flex flex-col items-center justify-center text-center px-4 md:px-6 pt-24 pb-16 relative overflow-hidden misty-vignette"
+      className="min-h-screen flex flex-col items-center justify-center text-center px-4 md:px-6 pt-24 pb-16 relative overflow-hidden"
       style={{
         background:
           "linear-gradient(160deg, #FFF5F7 0%, #FFFFFF 40%, #FFFBF0 70%, #FFF0F5 100%)",
@@ -140,7 +140,6 @@ export default function Hero() {
           opacity: 0;
           pointer-events: none;
           z-index: 10;
-          filter: blur(0.5px);
         }
         .petal-wrapper svg {
           filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
@@ -281,8 +280,6 @@ export default function Hero() {
             border: "6px solid white",
           }}
         >
-          {/* Frosted inner border */}
-          <div className="absolute inset-0 border-[1px] border-accent/20 rounded-[34px] z-10 pointer-events-none" />
           
           <Image
             src="/images/couple-1.jpg"
