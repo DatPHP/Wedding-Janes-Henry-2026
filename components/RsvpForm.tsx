@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { Heart, X } from "lucide-react";
 import { toast } from "react-toastify";
@@ -28,6 +29,11 @@ export default function RsvpForm() {
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -186,45 +192,48 @@ export default function RsvpForm() {
         </form>
       </div>
 
-      <AnimatePresence>
-        {success && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setSuccess(false)}
-                className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            />
-            <motion.div 
-                initial={{ scale: 0.95, opacity: 0, y: 20 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                className="bg-white p-10 md:p-14 rounded-[32px] shadow-2xl relative z-10 max-w-md w-full border border-accent/10 text-center"
-            >
-                <button 
-                    onClick={() => setSuccess(false)}
-                    className="absolute top-6 right-6 text-muted hover:text-black transition-colors bg-background rounded-full p-2"
-                >
-                    <X size={20} />
-                </button>
-                
-                <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Heart className="text-accent fill-accent animate-pulse" size={32} />
-                </div>
+      {mounted && createPortal(
+        <AnimatePresence>
+          {success && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+              <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setSuccess(false)}
+                  className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              />
+              <motion.div 
+                  initial={{ scale: 0.95, opacity: 0, y: 20 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                  className="bg-white p-10 md:p-14 rounded-[32px] shadow-2xl relative z-10 max-w-md w-full border border-accent/10 text-center"
+              >
+                  <button 
+                      onClick={() => setSuccess(false)}
+                      className="absolute top-6 right-6 text-muted hover:text-black transition-colors bg-background rounded-full p-2"
+                  >
+                      <X size={20} />
+                  </button>
+                  
+                  <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                      <Heart className="text-accent fill-accent animate-pulse" size={32} />
+                  </div>
 
-                <h3 className="text-3xl font-serif text-accent mb-4">Cảm Ơn Bạn!</h3>
-                <p className="text-lg text-muted mb-8">
-                  Xác nhận của bạn đã được gửi thành công. Sự yêu thương của bạn là thước đo hạnh phúc của chúng tôi!
-                </p>
+                  <h3 className="text-3xl font-serif text-accent mb-4">Cảm Ơn Bạn!</h3>
+                  <p className="text-lg text-muted mb-8">
+                    Xác nhận của bạn đã được gửi thành công. Sự yêu thương của bạn là thước đo hạnh phúc của chúng tôi!
+                  </p>
 
-                <p className="font-script text-2xl text-accent/80">
-                  Với trọn tình yêu, Janes & Henry
-                </p>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+                  <p className="font-script text-2xl text-accent/80">
+                    Với trọn tình yêu, Janes & Henry
+                  </p>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   );
 }
