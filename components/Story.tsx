@@ -12,7 +12,7 @@ export default function Story() {
         },
         {
             year: "2024",
-            title: "Ngày Cầu Hôn",
+            title: "Tỏ Tình",
             desc: "Chính thức ngỏ lời yêu thương.",
         },
         {

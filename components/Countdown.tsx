@@ -5,7 +5,12 @@ import { useEffect, useState } from "react";
 const WEDDING_DATE = new Date("2026-12-06T00:00:00");
 
 export default function Countdown() {
-    const [timeLeft, setTimeLeft] = useState(getTimeLeft());
+    const [timeLeft, setTimeLeft] = useState({
+        "Ngày": 0,
+        "Giờ": 0,
+        "Phút": 0,
+        "Giây": 0,
+    });
 
     function getTimeLeft() {
         const now = new Date().getTime();
@@ -31,6 +36,7 @@ export default function Countdown() {
     }
 
     useEffect(() => {
+        setTimeLeft(getTimeLeft());
         const timer = setInterval(() => {
             setTimeLeft(getTimeLeft());
         }, 1000);

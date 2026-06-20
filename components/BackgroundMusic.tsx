@@ -37,10 +37,10 @@ export default function BackgroundMusic() {
     };
 
     return (
-        <div className="fixed bottom-8 left-6 z-[100] flex flex-col items-center gap-2">
+        <div className="group fixed bottom-8 left-6 z-[100] flex flex-col items-center gap-2">
             <button
                 onClick={togglePlay}
-                className="relative group flex items-center justify-center"
+                className="relative flex items-center justify-center"
                 aria-label="Toggle background music"
             >
                 {/* Vinyl Disc / Player Button Styling */}

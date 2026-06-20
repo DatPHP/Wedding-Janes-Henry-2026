@@ -37,7 +37,7 @@ export default function EventInfo() {
                         <p className="text-accent/80 text-xs font-semibold tracking-widest uppercase mb-6">Trao Lời Thề Nguyện</p>
                         
                         <div className="space-y-4 text-muted flex-grow">
-                            <p className="text-lg font-medium text-foreground">06 Tháng 12 2026</p>
+                            <p className="text-lg font-medium text-foreground">29 Tháng 11 2026</p>
                             <p>10:00 Sáng - 11:30 Sáng</p>
                             <div className="w-16 h-[2px] bg-gradient-to-r from-transparent via-accent/40 to-transparent mx-auto my-6"></div>
                             <p className="font-medium text-foreground text-lg">Phù Cát, Bình Định</p>
@@ -65,7 +65,7 @@ export default function EventInfo() {
                             <p className="text-lg font-medium text-foreground">06 Tháng 12 2026</p>
                             <p>6:00 Tối - 9:00 Tối</p>
                             <div className="w-16 h-[2px] bg-gradient-to-r from-transparent via-accent/40 to-transparent mx-auto my-6"></div>
-                            <p className="font-medium text-foreground text-lg">Thuận An, Bình Dương</p>
+                            <p className="font-medium text-foreground text-lg">Thuận An, TP.Hồ Chí Minh</p>
                             <p className="text-sm italic">Quê của Henry</p>
                         </div>
                         

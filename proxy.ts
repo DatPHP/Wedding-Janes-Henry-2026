@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const PUBLIC_PATHS = ['/admin/login', '/api/admin/login']
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
     const { pathname } = req.nextUrl
 
     // Allow public auth paths through without any check

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Gift, X } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -55,8 +56,8 @@ export default function DigitalGifting() {
                             <div className="aspect-square bg-background rounded-2xl flex items-center justify-center p-8 border border-accent/20 mb-6">
                                 {/* Placeholder for absolute an actual Bank VietQR image */}
                                 <div className="text-center">
-                                    <div className="w-48 h-48 bg-gray-200 rounded-xl mb-4 flex items-center justify-center text-muted">
-                                        <img src="/images/QR_banking_janes.jpg" alt="Janes's QR Code" />
+                                    <div className="w-48 h-48 bg-gray-200 rounded-xl mb-4 flex items-center justify-center text-muted overflow-hidden">
+                                        <Image src="/images/QR_banking_janes.jpg" alt="Janes's QR Code" width={192} height={192} className="w-full h-full object-cover" />
                                     </div>
                                     <p className="font-semibold text-black">Janes & Henry</p>
                                     <p className="text-sm text-muted">Asia Commercial Bank (ACB)</p>

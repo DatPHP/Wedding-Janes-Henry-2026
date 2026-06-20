@@ -8,7 +8,9 @@ import { z } from "zod";
 
 const rsvpSchema = z.object({
   name: z.string().min(1, "Vui lòng nhập họ và tên"),
-  phone: z.string().regex(/^0\d{9}$/, "Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0."),
+  phone: z.string()
+    .transform((val) => val.replace(/[\s-]/g, ""))
+    .refine((val) => /^0\d{9}$/.test(val), "Số điện thoại phải có 10 chữ số và bắt đầu bằng số 0."),
   relationship: z.string().min(1, "Vui lòng chọn mối quan hệ"),
   message: z.string().optional().default(""),
   attendance: z.string().min(1, "Vui lòng chọn xác nhận tham dự"),
@@ -49,7 +51,7 @@ export default function RsvpForm() {
       const res = await fetch("/api/rsvp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(result.data),
       });
 
       const data = await res.json();
@@ -93,6 +95,7 @@ export default function RsvpForm() {
           <div>
             <input
               name="name"
+              aria-label="Họ và Tên"
               placeholder="Họ và Tên"
               value={form.name}
               onChange={handleChange}
@@ -104,6 +107,7 @@ export default function RsvpForm() {
             <input
               name="phone"
               type="tel"
+              aria-label="Số Điện Thoại"
               placeholder="Số Điện Thoại"
               value={form.phone}
               onChange={handleChange}
@@ -115,6 +119,7 @@ export default function RsvpForm() {
           <div>
             <select
               name="relationship"
+              aria-label="Mối Quan Hệ"
               value={form.relationship}
               onChange={handleChange}
               required
@@ -132,6 +137,7 @@ export default function RsvpForm() {
           <div>
             <textarea
               name="message"
+              aria-label="Gửi lời chúc"
               placeholder="Gửi lời chúc đến Janes & Henry..."
               value={form.message}
               onChange={handleChange}

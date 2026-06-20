@@ -24,6 +24,11 @@ export async function POST(req: Request) {
 
     const { name, phone, relationship, message, attendance } = result.data;
 
+    if (!process.env.POSTGRES_URL) {
+      console.warn("Missing POSTGRES_URL. Bypassing RSVP database insertion.");
+      return NextResponse.json({ success: true, mocked: true });
+    }
+
     await sql`
       INSERT INTO wedding_guests
       (name, phone, relationship, message, attendance)
