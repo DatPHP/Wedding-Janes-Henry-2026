@@ -182,12 +182,12 @@ export default function Hero() {
 
       {/* ── Three-column hero: avatar | title | avatar (always 3 cols) ── */}
       <div className="w-full max-w-5xl mx-auto grid grid-cols-[1fr_auto_1fr] items-center gap-2 md:gap-10">
-        {/* Left — Janes */}
+        {/* Left — Kiều Ngân */}
         <div className="flex justify-center md:justify-end">
           <AvatarMedallion
             src="/images/avatar/Janes_avatar.jpg"
-            name="Janes"
-            initial="J"
+            name="Kiều Ngân"
+            initial="N"
             side="left"
           />
         </div>
@@ -210,7 +210,7 @@ export default function Hero() {
               transition={{ duration: 1, delay: 0.3 }}
               className="inline-block"
             >
-              Janes
+              Kiều Ngân
             </motion.span>
             <motion.span
               initial={{ opacity: 0, scale: 0.5 }}
@@ -226,7 +226,7 @@ export default function Hero() {
               transition={{ duration: 1, delay: 0.9 }}
               className="inline-block"
             >
-              Henry
+              Văn Đạt
             </motion.span>
           </h1>
 
@@ -259,12 +259,12 @@ export default function Hero() {
           </p>
         </div>
 
-        {/* Right — Henry */}
+        {/* Right — Văn Đạt */}
         <div className="flex justify-center md:justify-start">
           <AvatarMedallion
             src="/images/avatar/Henry_avatar.jpg"
-            name="Henry"
-            initial="H"
+            name="Văn Đạt"
+            initial="Đ"
             side="right"
           />
         </div>
@@ -283,7 +283,7 @@ export default function Hero() {
           
           <Image
             src="/images/couple-1.jpg"
-            alt="Janes & Henry — Together"
+            alt="Kiều Ngân & Văn Đạt — Together"
             width={800}
             height={1000}
             className="w-full object-cover transition-transform duration-1000 group-hover:scale-105"

@@ -144,7 +144,7 @@ export default function RsvpForm() {
             <textarea
               name="message"
               aria-label="Gửi lời chúc"
-              placeholder="Gửi lời chúc đến Janes & Henry..."
+              placeholder="Gửi lời chúc đến Kiều Ngân & Văn Đạt..."
               value={form.message}
               onChange={handleChange}
               className="w-full bg-background/50 border border-muted/20 rounded-2xl px-6 py-4 outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-all min-h-[120px] text-black resize-none"
@@ -226,7 +226,7 @@ export default function RsvpForm() {
                   </p>
 
                   <p className="font-script text-2xl text-accent/80">
-                    Với trọn tình yêu, Janes & Henry
+                    Với trọn tình yêu, Kiều Ngân & Văn Đạt
                   </p>
               </motion.div>
             </div>

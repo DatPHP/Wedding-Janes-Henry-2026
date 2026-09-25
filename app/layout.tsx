@@ -21,8 +21,8 @@ const greatVibes = Great_Vibes({
 });
 
 export const metadata: Metadata = {
-  title: "Janes & Henry",
-  description: "Lễ Cưới Của Janes & Henry",
+  title: "Kiều Ngân & Văn Đạt",
+  description: "Lễ Cưới Của Kiều Ngân & Văn Đạt",
 };
 
 export default function RootLayout({

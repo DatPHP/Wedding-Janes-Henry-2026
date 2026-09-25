@@ -96,7 +96,7 @@ export default function AdminLogin() {
           </form>
 
           <div className="mt-8 pt-8 border-t border-muted/10">
-            <p className="font-script text-2xl text-accent/80">Janes & Henry</p>
+            <p className="font-script text-2xl text-accent/80">Kiều Ngân & Văn Đạt</p>
           </div>
         </div>
       </div>

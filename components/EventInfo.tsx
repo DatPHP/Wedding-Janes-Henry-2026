@@ -5,8 +5,8 @@ export default function EventInfo() {
     const binhDuongMap = "https://www.google.com/maps/search/?api=1&query=Phuong+Lai+Thieu,+Thuan+An,+Ho+Chi+Minh+City,+Vietnam";
     
     // Google Calendar links
-    const calendarLinkGai = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=L%E1%BB%85+C%C6%B0%E1%BB%9Bi+Janes+%26+Henry+(Nh%C3%A0+G%C3%A1i)&dates=20261128T030000Z/20261128T150000Z&details=L%E1%BB%85+c%C6%B0%E1%BB%9Bi+nh%C3%A0+g%C3%A1i+c%E1%BB%A7a+Janes+%26+Henry&location=X%C3%A3+Ph%C3%B9+C%C3%A1t%2C+Gia+Lai%2C+Vi%E1%BB%87t+Nam";
-    const calendarLinkTrai = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=L%E1%BB%85+C%C6%B0%E1%BB%9Bi+Janes+%26+Henry+(Nh%C3%A0+Trai)&dates=20261206T030000Z/20261206T150000Z&details=L%E1%BB%85+c%C6%B0%E1%BB%9Bi+nh%C3%A0+trai+%26+ti%E1%BB%87c+c%C6%B0%E1%BB%9Bi+Janes+%26+Henry&location=Ph%C6%B0%E1%BB%9Dng+L%C3%A1i+Thi%C3%AAu%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh";
+    const calendarLinkGai = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=L%E1%BB%85+C%C6%B0%E1%BB%9Bi+Ki%E1%BB%81u+Ng%C3%A2n+%26+V%C4%83n+%C4%90%E1%BA%A1t+(Nh%C3%A0+G%C3%A1i)&dates=20261128T030000Z/20261128T150000Z&details=L%E1%BB%85+c%C6%B0%E1%BB%9Bi+nh%C3%A0+g%C3%A1i+c%E1%BB%A7a+Ki%E1%BB%81u+Ng%C3%A2n+%26+V%C4%83n+%C4%90%E1%BA%A1t&location=X%C3%A3+Ph%C3%B9+C%C3%A1t%2C+Gia+Lai%2C+Vi%E1%BB%87t+Nam";
+    const calendarLinkTrai = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=L%E1%BB%85+C%C6%B0%E1%BB%9Bi+Ki%E1%BB%81u+Ng%C3%A2n+%26+V%C4%83n+%C4%90%E1%BA%A1t+(Nh%C3%A0+Trai)&dates=20261206T030000Z/20261206T150000Z&details=L%E1%BB%85+c%C6%B0%E1%BB%9Bi+nh%C3%A0+trai+%26+ti%E1%BB%87c+c%C6%B0%E1%BB%9Bi+Ki%E1%BB%81u+Ng%C3%A2n+%26+V%C4%83n+%C4%90%E1%BA%A1t&location=Ph%C6%B0%E1%BB%9Dng+L%C3%A1i+Thi%C3%AAu%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh";
 
     return (
         <section className="relative py-24 bg-gradient-to-b from-white via-accent-light/30 to-white text-center px-6 overflow-hidden">
@@ -42,7 +42,7 @@ export default function EventInfo() {
                             <p>Sáng – Chào đón khách quý</p>
                             <div className="w-16 h-[2px] bg-gradient-to-r from-transparent via-accent/40 to-transparent mx-auto my-6"></div>
                             <p className="font-medium text-foreground text-lg">Xã Phù Cát, Tỉnh Gia Lai</p>
-                            <p className="text-sm italic">Quê của Janes</p>
+                            <p className="text-sm italic">Quê của Kiều Ngân</p>
                         </div>
                         
                         <a href={binhDinhMap} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center justify-center gap-2 text-sm font-semibold text-accent hover:text-white transition-all duration-300 w-full px-6 py-4 bg-white border border-accent/20 rounded-full hover:bg-accent hover:border-accent hover:shadow-lg hover:shadow-accent/30 group-hover:bg-accent/5">
@@ -70,7 +70,7 @@ export default function EventInfo() {
                             <p>6:00 Tối - 9:00 Tối</p>
                             <div className="w-16 h-[2px] bg-gradient-to-r from-transparent via-accent/40 to-transparent mx-auto my-6"></div>
                             <p className="font-medium text-foreground text-lg">Phường Lái Thiêu, TP. Hồ Chí Minh</p>
-                            <p className="text-sm italic">Quê của Henry</p>
+                            <p className="text-sm italic">Quê của Văn Đạt</p>
                         </div>
                         
                         <a href={binhDuongMap} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center justify-center gap-2 text-sm font-semibold text-accent hover:text-white transition-all duration-300 w-full px-6 py-4 bg-white border border-accent/20 rounded-full hover:bg-accent hover:border-accent hover:shadow-lg hover:shadow-accent/30 group-hover:bg-accent/5">

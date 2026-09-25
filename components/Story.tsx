@@ -28,7 +28,7 @@ export default function Story() {
         {
             year: "08/08/2026",
             title: "Cầu Hôn",
-            desc: "Khoảnh khắc trái tim ngừng đập — Henry cầu hôn và câu trả lời mãi mãi là Có.",
+            desc: "Khoảnh khắc trái tim ngừng đập — Văn Đạt cầu hôn và câu trả lời mãi mãi là Có.",
         },
         {
             year: "12/09/2026",
@@ -38,12 +38,12 @@ export default function Story() {
         {
             year: "28/11/2026",
             title: "Đám Hỏi & Lễ Vu Quy",
-            desc: "Ngày trọng đại tại quê Janes — Xã Phù Cát, tỉnh Gia Lai.",
+            desc: "Ngày trọng đại tại quê Kiều Ngân — Xã Phù Cát, tỉnh Gia Lai.",
         },
         {
             year: "06/12/2026",
             title: "Lễ Thành Hôn & Tiệc Cưới",
-            desc: "Ngày sum vầy tại quê Henry — Phường Lái Thiêu, Thành phố Hồ Chí Minh.",
+            desc: "Ngày sum vầy tại quê Văn Đạt — Phường Lái Thiêu, Thành phố Hồ Chí Minh.",
         },
     ];
 

@@ -57,9 +57,9 @@ export default function DigitalGifting() {
                                 {/* Placeholder for absolute an actual Bank VietQR image */}
                                 <div className="text-center">
                                     <div className="w-48 h-48 bg-gray-200 rounded-xl mb-4 flex items-center justify-center text-muted overflow-hidden">
-                                        <Image src="/images/QR_banking_janes.jpg" alt="Janes's QR Code" width={192} height={192} className="w-full h-full object-cover" />
+                                        <Image src="/images/QR_banking_janes.jpg" alt="QR Code Kiều Ngân" width={192} height={192} className="w-full h-full object-cover" />
                                     </div>
-                                    <p className="font-semibold text-black">Janes & Henry</p>
+                                    <p className="font-semibold text-black">Kiều Ngân & Văn Đạt</p>
                                     <p className="text-sm text-muted">Asia Commercial Bank (ACB)</p>
                                     <p className="text-sm text-muted">4562587</p>
                                 </div>
