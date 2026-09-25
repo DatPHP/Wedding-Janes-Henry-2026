@@ -1,11 +1,12 @@
 import { MapPin, CalendarHeart } from "lucide-react";
 
 export default function EventInfo() {
-    const binhDinhMap = "https://www.google.com/maps/search/?api=1&query=2325%2BG77%2C+Ba+Thang+Hai%2C+Ngo+May+Town%2C+Phu+Cat%2C+Gia+Lai%2C+Vietnam";
-    const binhDuongMap = "https://www.google.com/maps/search/?api=1&query=51+Nguyen+Van+Tiet%2C+Lai+Thieu%2C+Thuan+An%2C+Ho+Chi+Minh+City";
+    const binhDinhMap = "https://www.google.com/maps/search/?api=1&query=Xa+Phu+Cat,+Gia+Lai,+Vietnam";
+    const binhDuongMap = "https://www.google.com/maps/search/?api=1&query=Phuong+Lai+Thieu,+Thuan+An,+Ho+Chi+Minh+City,+Vietnam";
     
-    // Google Calendar template link for Dec 6 2026
-    const calendarLink = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=Wedding+of+Janes+%26+Henry&dates=20261206T030000Z/20261206T150000Z&details=Celebrating+the+wedding+of+Janes+%26+Henry!&location=Vietnam";
+    // Google Calendar links
+    const calendarLinkGai = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=L%E1%BB%85+C%C6%B0%E1%BB%9Bi+Janes+%26+Henry+(Nh%C3%A0+G%C3%A1i)&dates=20261128T030000Z/20261128T150000Z&details=L%E1%BB%85+c%C6%B0%E1%BB%9Bi+nh%C3%A0+g%C3%A1i+c%E1%BB%A7a+Janes+%26+Henry&location=X%C3%A3+Ph%C3%B9+C%C3%A1t%2C+Gia+Lai%2C+Vi%E1%BB%87t+Nam";
+    const calendarLinkTrai = "https://calendar.google.com/calendar/render?action=TEMPLATE&text=L%E1%BB%85+C%C6%B0%E1%BB%9Bi+Janes+%26+Henry+(Nh%C3%A0+Trai)&dates=20261206T030000Z/20261206T150000Z&details=L%E1%BB%85+c%C6%B0%E1%BB%9Bi+nh%C3%A0+trai+%26+ti%E1%BB%87c+c%C6%B0%E1%BB%9Bi+Janes+%26+Henry&location=Ph%C6%B0%E1%BB%9Dng+L%C3%A1i+Thi%C3%AAu%2C+Th%C3%A0nh+ph%E1%BB%91+H%E1%BB%93+Ch%C3%AD+Minh";
 
     return (
         <section className="relative py-24 bg-gradient-to-b from-white via-accent-light/30 to-white text-center px-6 overflow-hidden">
@@ -33,19 +34,22 @@ export default function EventInfo() {
                             <CalendarHeart size={28} strokeWidth={1.5} />
                         </div>
                         
-                        <h3 className="text-3xl font-serif text-foreground mb-2 group-hover:text-accent transition-colors duration-300">Lễ Thành Hôn</h3>
-                        <p className="text-accent/80 text-xs font-semibold tracking-widest uppercase mb-6">Trao Lời Thề Nguyện</p>
+                        <h3 className="text-3xl font-serif text-foreground mb-2 group-hover:text-accent transition-colors duration-300">Đám Hỏi & Lễ Vu Quy</h3>
+                        <p className="text-accent/80 text-xs font-semibold tracking-widest uppercase mb-6">Nhà Gái · 28 Tháng 11 2026</p>
                         
                         <div className="space-y-4 text-muted flex-grow">
-                            <p className="text-lg font-medium text-foreground">29 Tháng 11 2026</p>
-                            <p>10:00 Sáng - 11:30 Sáng</p>
+                            <p className="text-lg font-medium text-foreground">28 Tháng 11 2026</p>
+                            <p>Sáng – Chào đón khách quý</p>
                             <div className="w-16 h-[2px] bg-gradient-to-r from-transparent via-accent/40 to-transparent mx-auto my-6"></div>
-                            <p className="font-medium text-foreground text-lg">Phù Cát, Bình Định</p>
+                            <p className="font-medium text-foreground text-lg">Xã Phù Cát, Tỉnh Gia Lai</p>
                             <p className="text-sm italic">Quê của Janes</p>
                         </div>
                         
                         <a href={binhDinhMap} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center justify-center gap-2 text-sm font-semibold text-accent hover:text-white transition-all duration-300 w-full px-6 py-4 bg-white border border-accent/20 rounded-full hover:bg-accent hover:border-accent hover:shadow-lg hover:shadow-accent/30 group-hover:bg-accent/5">
                             <MapPin size={18} /> Xem Bản Đồ
+                        </a>
+                        <a href={calendarLinkGai} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center justify-center gap-2 text-sm font-semibold text-muted hover:text-accent transition-all duration-300 w-full px-6 py-3">
+                            <CalendarHeart size={16} /> Lưu Lịch 28/11
                         </a>
                     </div>
 
@@ -58,32 +62,46 @@ export default function EventInfo() {
                             <CalendarHeart size={28} strokeWidth={1.5} />
                         </div>
                         
-                        <h3 className="text-3xl font-serif text-foreground mb-2 group-hover:text-accent transition-colors duration-300">Tiệc Cưới</h3>
-                        <p className="text-accent/80 text-xs font-semibold tracking-widest uppercase mb-6">Tiệc Mừng Hạnh Phúc</p>
+                        <h3 className="text-3xl font-serif text-foreground mb-2 group-hover:text-accent transition-colors duration-300">Lễ Thành Hôn & Tiệc Cưới</h3>
+                        <p className="text-accent/80 text-xs font-semibold tracking-widest uppercase mb-6">Nhà Trai · 06 Tháng 12 2026</p>
                         
                         <div className="space-y-4 text-muted flex-grow">
                             <p className="text-lg font-medium text-foreground">06 Tháng 12 2026</p>
                             <p>6:00 Tối - 9:00 Tối</p>
                             <div className="w-16 h-[2px] bg-gradient-to-r from-transparent via-accent/40 to-transparent mx-auto my-6"></div>
-                            <p className="font-medium text-foreground text-lg">Thuận An, TP.Hồ Chí Minh</p>
+                            <p className="font-medium text-foreground text-lg">Phường Lái Thiêu, TP. Hồ Chí Minh</p>
                             <p className="text-sm italic">Quê của Henry</p>
                         </div>
                         
                         <a href={binhDuongMap} target="_blank" rel="noopener noreferrer" className="mt-8 inline-flex items-center justify-center gap-2 text-sm font-semibold text-accent hover:text-white transition-all duration-300 w-full px-6 py-4 bg-white border border-accent/20 rounded-full hover:bg-accent hover:border-accent hover:shadow-lg hover:shadow-accent/30 group-hover:bg-accent/5">
                             <MapPin size={18} /> Xem Bản Đồ
                         </a>
+                        <a href={calendarLinkTrai} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center justify-center gap-2 text-sm font-semibold text-muted hover:text-accent transition-all duration-300 w-full px-6 py-3">
+                            <CalendarHeart size={16} /> Lưu Lịch 06/12
+                        </a>
                     </div>
                 </div>
 
-                <a 
-                    href={calendarLink} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-3 bg-accent text-white px-10 py-4 rounded-full font-medium hover:bg-accent/90 hover:shadow-[0_10px_25px_rgb(255,133,161,0.35)] hover:-translate-y-1 transition-all duration-300"
-                >
-                    <CalendarHeart size={20} />
-                    <span>Lưu Lịch Trình</span>
-                </a>
+                <div className="flex flex-wrap justify-center gap-4">
+                    <a 
+                        href={calendarLinkGai} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-3 bg-accent text-white px-8 py-4 rounded-full font-medium hover:bg-accent/90 hover:shadow-[0_10px_25px_rgb(255,133,161,0.35)] hover:-translate-y-1 transition-all duration-300"
+                    >
+                        <CalendarHeart size={20} />
+                        <span>Lưu Lịch 28/11</span>
+                    </a>
+                    <a 
+                        href={calendarLinkTrai} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-3 bg-white border border-accent/30 text-accent px-8 py-4 rounded-full font-medium hover:bg-accent hover:text-white hover:shadow-[0_10px_25px_rgb(255,133,161,0.35)] hover:-translate-y-1 transition-all duration-300"
+                    >
+                        <CalendarHeart size={20} />
+                        <span>Lưu Lịch 06/12</span>
+                    </a>
+                </div>
             </div>
         </section>
     );

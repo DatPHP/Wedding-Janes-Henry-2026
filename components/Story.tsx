@@ -19,15 +19,31 @@ export default function Story() {
             year: "2025",
             title: "Chuyến Xuất Ngoại Đầu Tiên",
             desc: "Đón Giáng sinh và đi dạo quanh Kuala Lumpur.",
-        }, {
-            year: "2026",
-            title: "Chuyến Đi Huế - Đà Nẵng - Hội An",
-            desc: "Hành trình thanh xuân tuyệt vời của chúng tôi.",
         },
         {
-            year: "2026",
-            title: "Ngày Chung Đôi",
-            desc: "Ngày trọng đại - 06 tháng 12 năm 2026.",
+            year: "27/04 – 01/05/2026",
+            title: "Chuyến Đi Huế - Đà Nẵng - Hội An",
+            desc: "Hành trình thanh xuân tuyệt vời — khám phá vẻ đẹp cố đô Huế, phố cổ Hội An và biển xanh Đà Nẵng cùng nhau.",
+        },
+        {
+            year: "08/08/2026",
+            title: "Cầu Hôn",
+            desc: "Khoảnh khắc trái tim ngừng đập — Henry cầu hôn và câu trả lời mãi mãi là Có.",
+        },
+        {
+            year: "12/09/2026",
+            title: "Lễ Dạm Ngõ",
+            desc: "Hai gia đình chính thức gặp gỡ, mở đầu cho hành trình chung sống trọn đời.",
+        },
+        {
+            year: "28/11/2026",
+            title: "Đám Hỏi & Lễ Vu Quy",
+            desc: "Ngày trọng đại tại quê Janes — Xã Phù Cát, tỉnh Gia Lai.",
+        },
+        {
+            year: "06/12/2026",
+            title: "Lễ Thành Hôn & Tiệc Cưới",
+            desc: "Ngày sum vầy tại quê Henry — Phường Lái Thiêu, Thành phố Hồ Chí Minh.",
         },
     ];
 

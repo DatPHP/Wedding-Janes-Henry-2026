@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const WEDDING_DATE = new Date("2026-12-06T00:00:00");
+const WEDDING_DATE = new Date("2026-11-28T00:00:00");
 
 export default function Countdown() {
     const [timeLeft, setTimeLeft] = useState({
@@ -53,9 +53,12 @@ export default function Countdown() {
                 <p className="text-xs tracking-[4px] uppercase text-rose-400 mb-4 font-medium">
                     Save The Date
                 </p>
-                <h2 className="text-4xl md:text-5xl font-serif mb-16 text-black tracking-wide">
+                <h2 className="text-4xl md:text-5xl font-serif mb-4 text-black tracking-wide">
                     Đếm Ngược Tới Ngày Trọng Đại
                 </h2>
+                <p className="text-muted text-sm md:text-base mb-16 italic">
+                    28/11 Nhà Gái · 06/12 Nhà Trai
+                </p>
 
                 <div className="flex justify-center gap-3 md:gap-8 flex-wrap max-w-4xl mx-auto">
                     {Object.entries(timeLeft).map(([label, value]) => (
