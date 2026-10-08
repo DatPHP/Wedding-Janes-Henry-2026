@@ -66,7 +66,7 @@ export default function NavBar() {
             className="font-script text-2xl text-accent leading-none select-none"
             aria-label="Back to top"
           >
-            J & H
+            Ngan & Dat
           </a>
 
           {/* Desktop links */}
