@@ -115,19 +115,56 @@ function AvatarMedallion({
 
 const DEFAULT_BG = "/images/couple-1.jpg";
 
-export default function Hero() {
-  const [bgUrl, setBgUrl] = useState<string>(DEFAULT_BG);
+type BackgroundResponse = {
+    id: string;
+    label: string;
+    image_url: string;
+    is_active: boolean;
+};
 
-  useEffect(() => {
-    fetch("/api/backgrounds?active=true")
-      .then((r) => r.json())
-      .then((data) => {
-        if (Array.isArray(data) && data.length > 0 && data[0].image_url) {
-          setBgUrl(data[0].image_url);
-        }
-      })
-      .catch(() => {});
-  }, []);
+export default function Hero() {
+ const [bgUrl, setBgUrl] = useState<string>(DEFAULT_BG);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        const loadActiveBackground = async () => {
+            try {
+                const res = await fetch("/api/backgrounds?active=true", {
+                    cache: "no-store",
+                });
+
+                if (!res.ok) {
+                    throw new Error("Không thể tải hình nền.");
+                }
+
+                const data: unknown = await res.json();
+
+                if (!Array.isArray(data) || data.length === 0) {
+                    return;
+                }
+
+                const background = data[0] as BackgroundResponse;
+
+                if (
+                    !cancelled &&
+                    typeof background.image_url === "string" &&
+                    background.image_url.startsWith("https://")
+                ) {
+                    setBgUrl(background.image_url);
+                }
+            } catch (error) {
+                console.error("Failed to load active background:", error);
+                // Giữ ảnh mặc định nếu API gặp lỗi.
+            }
+        };
+
+        void loadActiveBackground();
+
+        return () => {
+            cancelled = true;
+        };
+    }, []);
 
   return (
     <section

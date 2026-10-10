@@ -164,45 +164,104 @@ export default function AdminPage() {
     };
 
     /* ─── Backgrounds ─────────────────────────────────────────────────────── */
+
     const fetchBackgrounds = async () => {
         try {
             setLoadingBgs(true);
-            const res = await fetch("/api/backgrounds");
-            const data = await res.json();
-            if (Array.isArray(data)) setBackgrounds(data);
+
+            const res = await fetch("/api/backgrounds", {
+                cache: "no-store",
+            });
+
+            const data = await res.json().catch(() => null);
+
+            if (!res.ok) {
+                throw new Error(data?.error || "Không thể tải danh sách hình nền.");
+            }
+
+            if (!Array.isArray(data)) {
+                throw new Error("API hình nền trả về dữ liệu không hợp lệ.");
+            }
+
+            setBackgrounds(data);
         } catch (error) {
-            console.error("Failed to fetch backgrounds", error);
+            console.error("Failed to fetch backgrounds:", error);
+            toast.error(
+                error instanceof Error
+                    ? error.message
+                    : "Không thể tải danh sách hình nền."
+            );
         } finally {
             setLoadingBgs(false);
         }
     };
 
-    const handleBgUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
+
+    const handleBgUpload = async (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const input = e.currentTarget;
+        const file = input.files?.[0];
+
         if (!file) return;
 
+        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+        if (!allowedTypes.includes(file.type)) {
+            toast.error("Chỉ hỗ trợ ảnh JPG, PNG hoặc WebP.");
+            input.value = "";
+            return;
+        }
+
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("Ảnh không được vượt quá 5 MB.");
+            input.value = "";
+            return;
+        }
+
         const label = bgLabelInput.trim() || file.name;
+
         setUploadingBg(true);
         const tid = toast.loading("Đang tải lên hình nền...");
+
         const formData = new FormData();
         formData.append("file", file);
         formData.append("label", label);
 
         try {
-            const res = await fetch("/api/admin/backgrounds", { method: "POST", body: formData });
-            if (res.ok) {
-                toast.update(tid, { render: "Hình nền đã được tải lên!", type: "success", isLoading: false, autoClose: 3000 });
-                setBgLabelInput("");
-                await fetchBackgrounds();
-            } else {
-                const err = await res.json();
-                toast.update(tid, { render: err.error || "Upload thất bại.", type: "error", isLoading: false, autoClose: 3000 });
+            const res = await fetch("/api/admin/backgrounds", {
+                method: "POST",
+                body: formData,
+                cache: "no-store",
+            });
+
+            const data = await res.json().catch(() => null);
+
+            if (!res.ok) {
+                throw new Error(data?.error || "Upload hình nền thất bại.");
             }
-        } catch {
-            toast.update(tid, { render: "Lỗi mạng.", type: "error", isLoading: false, autoClose: 3000 });
+
+            toast.update(tid, {
+                render: "Hình nền đã được tải lên!",
+                type: "success",
+                isLoading: false,
+                autoClose: 3000,
+            });
+
+            setBgLabelInput("");
+            await fetchBackgrounds();
+        } catch (error) {
+            console.error("Background upload failed:", error);
+
+            toast.update(tid, {
+                render: error instanceof Error ? error.message : "Upload thất bại.",
+                type: "error",
+                isLoading: false,
+                autoClose: 4000,
+            });
         } finally {
             setUploadingBg(false);
-            if (bgFileRef.current) bgFileRef.current.value = "";
+            input.value = "";
         }
     };
 
@@ -212,10 +271,10 @@ export default function AdminPage() {
         const tid = toast.loading("Đang xóa...");
         try {
             const res = await fetch("/api/admin/backgrounds", {
-                method: "DELETE",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id, filePath }),
-            });
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id }),
+});
             if (res.ok) {
                 toast.update(tid, { render: "Đã xóa hình nền.", type: "success", isLoading: false, autoClose: 3000 });
                 await fetchBackgrounds();
@@ -231,20 +290,33 @@ export default function AdminPage() {
 
     const handleSetActive = async (id: string) => {
         setSettingActiveId(id);
+
         try {
             const res = await fetch("/api/admin/backgrounds", {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id }),
             });
-            if (res.ok) {
-                toast.success("Đã đặt làm hình nền chính!");
-                setBackgrounds(prev => prev.map(b => ({ ...b, is_active: b.id === id })));
-            } else {
-                toast.error("Không thể đặt hình nền.");
+
+            const data = await res.json().catch(() => null);
+
+            if (!res.ok) {
+                throw new Error(data?.error || "Không thể đặt hình nền.");
             }
-        } catch {
-            toast.error("Lỗi mạng.");
+
+            setBackgrounds((prev) =>
+                prev.map((bg) => ({
+                    ...bg,
+                    is_active: bg.id === id,
+                }))
+            );
+
+            toast.success("Đã đặt làm hình nền chính!");
+        } catch (error) {
+            console.error("Set active background failed:", error);
+            toast.error(
+                error instanceof Error ? error.message : "Lỗi mạng."
+            );
         } finally {
             setSettingActiveId(null);
         }
@@ -588,7 +660,8 @@ export default function AdminPage() {
                                         <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                                     </svg>
                                     <span>
-                                        Hình nền được lưu trên <strong>Supabase Storage</strong>. Hình đang dùng sẽ hiển thị ở phần Hero trên trang chính. Di chuột lên ảnh để xem tùy chọn.
+                                       File ảnh được lưu trên <strong>Vercel Blob</strong>, thông tin
+hình nền được lưu trong <strong>Neon PostgreSQL</strong>.
                                     </span>
                                 </div>
                             )}
