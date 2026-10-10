@@ -2,16 +2,17 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 const petals = [
-  { id: 1, left: "10%", delay: "0s", duration: "12s", scale: 1 },
-  { id: 2, left: "25%", delay: "2s", duration: "14s", scale: 0.8 },
-  { id: 3, left: "45%", delay: "4s", duration: "10s", scale: 1.2 },
-  { id: 4, left: "65%", delay: "1s", duration: "15s", scale: 0.9 },
-  { id: 5, left: "85%", delay: "5s", duration: "13s", scale: 1.1 },
-  { id: 6, left: "15%", delay: "6s", duration: "16s", scale: 0.7 },
-  { id: 7, left: "75%", delay: "3s", duration: "11s", scale: 1.3 },
-  { id: 8, left: "35%", delay: "7s", duration: "14s", scale: 0.85 },
+  { id: 1,  left: "10%", delay: "0s",  duration: "12s", scale: 1    },
+  { id: 2,  left: "25%", delay: "2s",  duration: "14s", scale: 0.8  },
+  { id: 3,  left: "45%", delay: "4s",  duration: "10s", scale: 1.2  },
+  { id: 4,  left: "65%", delay: "1s",  duration: "15s", scale: 0.9  },
+  { id: 5,  left: "85%", delay: "5s",  duration: "13s", scale: 1.1  },
+  { id: 6,  left: "15%", delay: "6s",  duration: "16s", scale: 0.7  },
+  { id: 7,  left: "75%", delay: "3s",  duration: "11s", scale: 1.3  },
+  { id: 8,  left: "35%", delay: "7s",  duration: "14s", scale: 0.85 },
 ];
 
 const PetalSVG = () => (
@@ -62,9 +63,7 @@ function AvatarMedallion({
         side === "left" ? "md:items-end" : "md:items-start"
       }`}
     >
-      {/* Layered ring frame */}
       <div className="relative group">
-        {/* Outer glow ring (decorative, sits behind the image ring) */}
         <div
           className="absolute inset-0 rounded-full pointer-events-none"
           style={{
@@ -74,11 +73,10 @@ function AvatarMedallion({
             borderRadius: "9999px",
           }}
         />
-        {/* Golden border ring with photo */}
         <div
           className="relative rounded-full overflow-hidden"
           style={{
-            width: "clamp(72px, 14vw, 200px)",
+            width:  "clamp(72px, 14vw, 200px)",
             height: "clamp(72px, 14vw, 200px)",
             border: "2px solid #C9A96E",
             boxShadow:
@@ -93,7 +91,6 @@ function AvatarMedallion({
             sizes="(max-width: 768px) 80px, 200px"
           />
         </div>
-        {/* Initial badge */}
         <div
           className="absolute -bottom-1 md:-bottom-2 left-1/2 -translate-x-1/2 w-5 h-5 md:w-9 md:h-9 rounded-full flex items-center justify-center text-white font-serif text-[9px] md:text-lg font-light z-10"
           style={{
@@ -104,8 +101,6 @@ function AvatarMedallion({
           {initial}
         </div>
       </div>
-
-      {/* Name */}
       <p
         className="font-serif text-[9px] md:text-xl mt-2 md:mt-4 tracking-wide"
         style={{ color: "#6B4226" }}
@@ -117,10 +112,27 @@ function AvatarMedallion({
 }
 
 /* ─── Hero section ─────────────────────────────────────────────────────────── */
+
+const DEFAULT_BG = "/images/couple-1.jpg";
+
 export default function Hero() {
+  const [bgUrl, setBgUrl] = useState<string>(DEFAULT_BG);
+
+  useEffect(() => {
+    fetch("/api/backgrounds?active=true")
+      .then((r) => r.json())
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0 && data[0].image_url) {
+          setBgUrl(data[0].image_url);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <section
-      className="min-h-screen flex flex-col items-center justify-center text-center px-4 md:px-6 pt-24 pb-16 relative overflow-hidden"
+      id="hero-section"
+      className="flex flex-col items-center text-center px-4 md:px-6 pt-24 pb-0 relative overflow-hidden"
       style={{
         background:
           "linear-gradient(160deg, #FFF5F7 0%, #FFFFFF 40%, #FFFBF0 70%, #FFF0F5 100%)",
@@ -128,9 +140,9 @@ export default function Hero() {
     >
       <style>{`
         @keyframes floatPetal {
-          0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 0; }
-          10% { opacity: 0.5; }
-          90% { opacity: 0.5; }
+          0%   { transform: translateY(-10vh) translateX(0) rotate(0deg);   opacity: 0; }
+          10%  { opacity: 0.5; }
+          90%  { opacity: 0.5; }
           100% { transform: translateY(110vh) translateX(40px) rotate(360deg); opacity: 0; }
         }
         .petal-wrapper {
@@ -141,12 +153,13 @@ export default function Hero() {
           pointer-events: none;
           z-index: 10;
         }
-        .petal-wrapper svg {
-          filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
-        }
       `}</style>
-      
-      {/* ── Petals layer ── */}
+
+      {/* Soft background blobs */}
+      <div className="absolute top-10 left-[-80px] w-72 h-72 rounded-full opacity-[0.07] pointer-events-none" style={{ background: "#FF85A1", filter: "blur(60px)" }} />
+      <div className="absolute bottom-40 right-[-60px] w-64 h-64 rounded-full opacity-[0.06] pointer-events-none" style={{ background: "#C9A96E", filter: "blur(60px)" }} />
+
+      {/* Petals */}
       {petals.map((petal) => (
         <div
           key={petal.id}
@@ -162,27 +175,19 @@ export default function Hero() {
         </div>
       ))}
 
-      {/* Subtle background petal blobs */}
-      <div
-        className="absolute top-10 left-[-80px] w-72 h-72 rounded-full opacity-[0.07] pointer-events-none"
-        style={{ background: "#FF85A1", filter: "blur(60px)" }}
-      />
-      <div
-        className="absolute bottom-20 right-[-60px] w-64 h-64 rounded-full opacity-[0.06] pointer-events-none"
-        style={{ background: "#C9A96E", filter: "blur(60px)" }}
-      />
-
-      {/* ── "We are getting married" label ── */}
-      <p
-        className="uppercase tracking-[0.15em] md:tracking-[0.25em] text-[10px] md:text-sm font-medium mb-6 md:mb-8"
+      {/* ── "Thân mời" label ── */}
+      <motion.p
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.9, delay: 0.2 }}
+        className="uppercase tracking-[0.15em] md:tracking-[0.25em] text-[10px] md:text-sm font-medium mb-6 md:mb-8 relative z-10"
         style={{ color: "#C9A96E" }}
       >
         Thân Mời Tham Dự Lễ Cưới
-      </p>
+      </motion.p>
 
-      {/* ── Three-column hero: avatar | title | avatar (always 3 cols) ── */}
-      <div className="w-full max-w-5xl mx-auto grid grid-cols-[1fr_auto_1fr] items-center gap-2 md:gap-10">
-        {/* Left — Kiều Ngân */}
+      {/* ── Three-column: avatar | names | avatar ── */}
+      <div className="w-full max-w-5xl mx-auto grid grid-cols-[1fr_auto_1fr] items-center gap-2 md:gap-10 relative z-10">
         <div className="flex justify-center md:justify-end">
           <AvatarMedallion
             src="/images/avatar/Janes_avatar.jpg"
@@ -192,7 +197,6 @@ export default function Hero() {
           />
         </div>
 
-        {/* Center — text content */}
         <div className="flex flex-col items-center text-center px-1 md:px-6">
           <Ornament />
 
@@ -230,7 +234,6 @@ export default function Hero() {
             </motion.span>
           </h1>
 
-          {/* Script quote */}
           <p
             className="font-script leading-snug mb-3 md:mb-4"
             style={{
@@ -246,7 +249,6 @@ export default function Hero() {
 
           <Ornament />
 
-          {/* Date */}
           <p
             className="font-serif italic mt-3 md:mt-5"
             style={{
@@ -259,7 +261,6 @@ export default function Hero() {
           </p>
         </div>
 
-        {/* Right — Văn Đạt */}
         <div className="flex justify-center md:justify-start">
           <AvatarMedallion
             src="/images/avatar/Henry_avatar.jpg"
@@ -270,8 +271,15 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* ── Couple photo below ── */}
-      <div className="mt-14 md:mt-20 w-full max-w-lg mx-auto mb-10 md:mb-12 animate-float-slow">
+      {/* ══════════════════════════════════════════
+          COUPLE PHOTO — tĩnh, hiển thị DƯỚI phần thông tin
+      ══════════════════════════════════════════ */}
+      <motion.div
+        initial={{ opacity: 0, y: 32 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.2, delay: 1.1, ease: "easeOut" }}
+        className="relative z-10 mt-10 md:mt-14 w-full max-w-lg mx-auto"
+      >
         <div
           className="rounded-[40px] overflow-hidden relative group"
           style={{
@@ -280,20 +288,19 @@ export default function Hero() {
             border: "6px solid white",
           }}
         >
-          
           <Image
-            src="/images/couple-1.jpg"
+            src={bgUrl}
             alt="Kiều Ngân & Văn Đạt — Together"
             width={800}
             height={1000}
-            className="w-full object-cover transition-transform duration-1000 group-hover:scale-105"
+            className="w-full object-cover object-center"
             priority
           />
         </div>
-      </div>
+      </motion.div>
 
       {/* Scroll indicator */}
-      <div className="animate-bounce mt-2 mb-2" style={{ color: "#FF85A1" }}>
+      <div className="animate-bounce mt-8 mb-4 relative z-10" style={{ color: "#FF85A1" }}>
         <svg
           className="w-6 h-6 mx-auto"
           fill="none"

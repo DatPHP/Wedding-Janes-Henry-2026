@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
@@ -12,6 +12,10 @@ import {
     UploadCloud,
     Loader2,
     MessageSquareHeart,
+    Layers,
+    CheckCircle2,
+    Star,
+    X,
 } from "lucide-react";
 import { toast } from "react-toastify";
 
@@ -31,7 +35,16 @@ type Memory = {
     image_url: string;
 };
 
-type Tab = "guests" | "memories";
+type Background = {
+    id: string;
+    label: string;
+    image_url: string;
+    file_path: string;
+    is_active: boolean;
+    created_at: string;
+};
+
+type Tab = "guests" | "memories" | "backgrounds";
 
 export default function AdminPage() {
     const router = useRouter();
@@ -47,20 +60,27 @@ export default function AdminPage() {
     const [isUploading, setIsUploading] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
-    // Initial Data Fetch — auth is handled by middleware (cookie), no localStorage needed
+    // Backgrounds State
+    const [backgrounds, setBackgrounds] = useState<Background[]>([]);
+    const [loadingBgs, setLoadingBgs] = useState(true);
+    const [uploadingBg, setUploadingBg] = useState(false);
+    const [deletingBgId, setDeletingBgId] = useState<string | null>(null);
+    const [settingActiveId, setSettingActiveId] = useState<string | null>(null);
+    const [bgLabelInput, setBgLabelInput] = useState("");
+    const bgFileRef = useRef<HTMLInputElement>(null);
+
     useEffect(() => {
         fetchGuests();
         fetchMemories();
+        fetchBackgrounds();
     }, []);
 
+    /* ─── Guests ──────────────────────────────────────────────────────────── */
     const fetchGuests = async () => {
         try {
             setLoadingGuests(true);
             const res = await fetch("/api/admin/forms");
-            if (!res.ok) {
-                console.error("Failed to fetch guests:", res.status);
-                return;
-            }
+            if (!res.ok) { console.error("Failed to fetch guests:", res.status); return; }
             const data = await res.json();
             if (data) setGuests(data);
         } catch (error) {
@@ -86,6 +106,7 @@ export default function AdminPage() {
         }
     };
 
+    /* ─── Memories ────────────────────────────────────────────────────────── */
     const fetchMemories = async () => {
         try {
             setLoadingMemories(true);
@@ -99,46 +120,16 @@ export default function AdminPage() {
         }
     };
 
-    const logout = async () => {
-        try {
-            // Clear the HttpOnly session cookie via the API
-            await fetch("/api/admin/login", { method: "DELETE" });
-        } catch {
-            // Proceed with redirect regardless
-        }
-        router.push("/admin/login");
-    };
-
-    const exportExcel = async () => {
-        const res = await fetch("/api/admin/export");
-        const blob = await res.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "wedding-guests.xlsx";
-        a.click();
-    };
-
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-
         setIsUploading(true);
         const formData = new FormData();
         formData.append("file", file);
-
         try {
-            const res = await fetch("/api/admin/memories", {
-                method: "POST",
-                body: formData,
-            });
-
-            if (res.ok) {
-                toast.success("Photo uploaded successfully!");
-                await fetchMemories();
-            } else {
-                toast.error("Failed to upload photo.");
-            }
+            const res = await fetch("/api/admin/memories", { method: "POST", body: formData });
+            if (res.ok) { toast.success("Photo uploaded successfully!"); await fetchMemories(); }
+            else toast.error("Failed to upload photo.");
         } catch (error) {
             console.error("Upload failed", error);
             toast.error("Network error. Upload failed.");
@@ -150,17 +141,14 @@ export default function AdminPage() {
 
     const handleDeleteMemory = async (id: string, imageUrl: string) => {
         if (!confirm("Are you sure you want to permanently delete this photo?")) return;
-
         setDeletingId(id);
         const loadingId = toast.loading("Deleting photo...");
-
         try {
             const res = await fetch("/api/admin/memories", {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id, imageUrl }),
             });
-
             if (res.ok) {
                 toast.update(loadingId, { render: "Photo deleted!", type: "success", isLoading: false, autoClose: 3000 });
                 await fetchMemories();
@@ -175,9 +163,112 @@ export default function AdminPage() {
         }
     };
 
+    /* ─── Backgrounds ─────────────────────────────────────────────────────── */
+    const fetchBackgrounds = async () => {
+        try {
+            setLoadingBgs(true);
+            const res = await fetch("/api/backgrounds");
+            const data = await res.json();
+            if (Array.isArray(data)) setBackgrounds(data);
+        } catch (error) {
+            console.error("Failed to fetch backgrounds", error);
+        } finally {
+            setLoadingBgs(false);
+        }
+    };
+
+    const handleBgUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const label = bgLabelInput.trim() || file.name;
+        setUploadingBg(true);
+        const tid = toast.loading("Đang tải lên hình nền...");
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("label", label);
+
+        try {
+            const res = await fetch("/api/admin/backgrounds", { method: "POST", body: formData });
+            if (res.ok) {
+                toast.update(tid, { render: "Hình nền đã được tải lên!", type: "success", isLoading: false, autoClose: 3000 });
+                setBgLabelInput("");
+                await fetchBackgrounds();
+            } else {
+                const err = await res.json();
+                toast.update(tid, { render: err.error || "Upload thất bại.", type: "error", isLoading: false, autoClose: 3000 });
+            }
+        } catch {
+            toast.update(tid, { render: "Lỗi mạng.", type: "error", isLoading: false, autoClose: 3000 });
+        } finally {
+            setUploadingBg(false);
+            if (bgFileRef.current) bgFileRef.current.value = "";
+        }
+    };
+
+    const handleDeleteBg = async (id: string, filePath: string, label: string) => {
+        if (!confirm(`Xóa hình nền "${label}" không?`)) return;
+        setDeletingBgId(id);
+        const tid = toast.loading("Đang xóa...");
+        try {
+            const res = await fetch("/api/admin/backgrounds", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id, filePath }),
+            });
+            if (res.ok) {
+                toast.update(tid, { render: "Đã xóa hình nền.", type: "success", isLoading: false, autoClose: 3000 });
+                await fetchBackgrounds();
+            } else {
+                toast.update(tid, { render: "Xóa thất bại.", type: "error", isLoading: false, autoClose: 3000 });
+            }
+        } catch {
+            toast.update(tid, { render: "Lỗi mạng.", type: "error", isLoading: false, autoClose: 3000 });
+        } finally {
+            setDeletingBgId(null);
+        }
+    };
+
+    const handleSetActive = async (id: string) => {
+        setSettingActiveId(id);
+        try {
+            const res = await fetch("/api/admin/backgrounds", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id }),
+            });
+            if (res.ok) {
+                toast.success("Đã đặt làm hình nền chính!");
+                setBackgrounds(prev => prev.map(b => ({ ...b, is_active: b.id === id })));
+            } else {
+                toast.error("Không thể đặt hình nền.");
+            }
+        } catch {
+            toast.error("Lỗi mạng.");
+        } finally {
+            setSettingActiveId(null);
+        }
+    };
+
+    const logout = async () => {
+        try { await fetch("/api/admin/login", { method: "DELETE" }); } catch { }
+        router.push("/admin/login");
+    };
+
+    const exportExcel = async () => {
+        const res = await fetch("/api/admin/export");
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "wedding-guests.xlsx";
+        a.click();
+    };
+
     const tabs: { id: Tab; label: string; icon: React.ReactNode }[] = [
-        { id: "guests", label: "Khách mời", icon: <Users className="w-4 h-4" /> },
-        { id: "memories", label: "Ký ức", icon: <ImageIcon className="w-4 h-4" /> },
+        { id: "guests",      label: "Khách mời",  icon: <Users className="w-4 h-4" /> },
+        { id: "memories",    label: "Ký ức",       icon: <ImageIcon className="w-4 h-4" /> },
+        { id: "backgrounds", label: "Hình nền",    icon: <Layers className="w-4 h-4" /> },
     ];
 
     return (
@@ -188,7 +279,7 @@ export default function AdminPage() {
                 <header className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-neutral-100">
                     <div>
                         <h1 className="text-2xl font-serif text-neutral-900">Admin Dashboard</h1>
-                        <p className="text-sm text-neutral-500 mt-1">Janes & Henry · Quản lý đám cưới.</p>
+                        <p className="text-sm text-neutral-500 mt-1">Janes &amp; Henry · Quản lý đám cưới.</p>
                     </div>
                     <button
                         onClick={logout}
@@ -356,6 +447,149 @@ export default function AdminPage() {
                                             </div>
                                         </div>
                                     ))}
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* ── BACKGROUNDS TAB ── */}
+                    {activeTab === "backgrounds" && (
+                        <div>
+                            {/* Header + Upload */}
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
+                                <div>
+                                    <h2 className="text-lg font-medium text-neutral-900">Quản lý hình nền</h2>
+                                    <p className="text-sm text-neutral-500 mt-1">
+                                        Tải lên ảnh và chọn hình nền chính cho trang chủ. Hình có dấu&nbsp;
+                                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded text-xs font-medium">
+                                            <Star className="w-3 h-3" /> Đang dùng
+                                        </span>
+                                        &nbsp;sẽ hiển thị ở phần Hero trên trang chào.
+                                    </p>
+                                </div>
+
+                                {/* Upload panel */}
+                                <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3 w-full md:w-auto">
+                                    <div className="flex flex-col gap-1">
+                                        <label className="text-xs text-neutral-500 font-medium">Nhãn hình (tùy chọn)</label>
+                                        <input
+                                            type="text"
+                                            value={bgLabelInput}
+                                            onChange={(e) => setBgLabelInput(e.target.value)}
+                                            placeholder="Vd: Ảnh cưới chính"
+                                            className="px-3 py-2.5 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-stone-300 bg-neutral-50"
+                                        />
+                                    </div>
+                                    <label className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-stone-900 hover:bg-stone-800 rounded-lg cursor-pointer transition-colors shadow-sm whitespace-nowrap">
+                                        {uploadingBg ? (
+                                            <><Loader2 className="w-4 h-4 animate-spin" /> Đang tải lên...</>
+                                        ) : (
+                                            <><UploadCloud className="w-4 h-4" /> Tải hình nền</>
+                                        )}
+                                        <input
+                                            ref={bgFileRef}
+                                            type="file"
+                                            accept="image/*"
+                                            className="hidden"
+                                            onChange={handleBgUpload}
+                                            disabled={uploadingBg}
+                                        />
+                                    </label>
+                                </div>
+                            </div>
+
+                            {/* Grid */}
+                            {loadingBgs ? (
+                                <div className="py-20 flex justify-center items-center text-neutral-400">
+                                    <Loader2 className="w-8 h-8 animate-spin" />
+                                </div>
+                            ) : backgrounds.length === 0 ? (
+                                <div className="text-center py-24 border-2 border-dashed border-neutral-200 rounded-2xl bg-neutral-50">
+                                    <Layers className="w-14 h-14 text-neutral-300 mx-auto mb-4" />
+                                    <h3 className="text-base font-medium text-neutral-800">Chưa có hình nền nào</h3>
+                                    <p className="text-sm text-neutral-500 mt-1.5">Tải lên ảnh đầu tiên để làm hình nền cho trang chào.</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {backgrounds.map((bg) => (
+                                        <div
+                                            key={bg.id}
+                                            className={`group relative rounded-2xl overflow-hidden border-2 shadow-sm transition-all duration-300 ${
+                                                bg.is_active
+                                                    ? "border-amber-400 shadow-amber-100 shadow-md"
+                                                    : "border-neutral-200 hover:border-neutral-300"
+                                            }`}
+                                        >
+                                            {/* Image */}
+                                            <div className="relative aspect-[16/9] w-full">
+                                                <Image
+                                                    src={bg.image_url}
+                                                    alt={bg.label}
+                                                    fill
+                                                    className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                                                    sizes="(max-width: 640px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                                />
+
+                                                {/* Active badge */}
+                                                {bg.is_active && (
+                                                    <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 bg-amber-400 text-amber-900 text-xs font-semibold rounded-full shadow">
+                                                        <Star className="w-3 h-3 fill-amber-900" />
+                                                        Đang dùng
+                                                    </div>
+                                                )}
+
+                                                {/* Hover overlay with actions */}
+                                                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 gap-2">
+                                                    {!bg.is_active && (
+                                                        <button
+                                                            onClick={() => handleSetActive(bg.id)}
+                                                            disabled={settingActiveId === bg.id}
+                                                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-amber-400 hover:bg-amber-300 text-amber-900 text-sm font-semibold rounded-xl transition-colors shadow"
+                                                        >
+                                                            {settingActiveId === bg.id ? (
+                                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                            ) : (
+                                                                <><CheckCircle2 className="w-4 h-4" /> Đặt làm hình nền chính</>
+                                                            )}
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        onClick={() => handleDeleteBg(bg.id, bg.file_path, bg.label)}
+                                                        disabled={deletingBgId === bg.id}
+                                                        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-xl transition-colors shadow disabled:opacity-50"
+                                                    >
+                                                        {deletingBgId === bg.id ? (
+                                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                                        ) : (
+                                                            <><X className="w-4 h-4" /> Xóa</>
+                                                        )}
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {/* Footer info */}
+                                            <div className={`px-4 py-3 ${bg.is_active ? "bg-amber-50" : "bg-white"}`}>
+                                                <p className="text-sm font-medium text-neutral-800 truncate">{bg.label}</p>
+                                                <p className="text-xs text-neutral-400 mt-0.5">
+                                                    {new Date(bg.created_at).toLocaleDateString("vi-VN", {
+                                                        year: "numeric", month: "short", day: "numeric",
+                                                    })}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {/* Info note */}
+                            {backgrounds.length > 0 && (
+                                <div className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-xl flex gap-3 items-start text-sm text-blue-700">
+                                    <svg className="w-5 h-5 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                                    </svg>
+                                    <span>
+                                        Hình nền được lưu trên <strong>Supabase Storage</strong>. Hình đang dùng sẽ hiển thị ở phần Hero trên trang chính. Di chuột lên ảnh để xem tùy chọn.
+                                    </span>
                                 </div>
                             )}
                         </div>
