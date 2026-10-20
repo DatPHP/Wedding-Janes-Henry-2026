@@ -114,6 +114,8 @@ function AvatarMedallion({
 /* ─── Hero section ─────────────────────────────────────────────────────────── */
 
 const DEFAULT_BG = "/images/couple-1.jpg";
+const DEFAULT_BRIDE_AVATAR = "/images/avatar/Janes_avatar.jpg";
+const DEFAULT_GROOM_AVATAR = "/images/avatar/Henry_avatar.jpg";
 
 type BackgroundResponse = {
     id: string;
@@ -122,8 +124,17 @@ type BackgroundResponse = {
     is_active: boolean;
 };
 
+type AvatarResponse = {
+    id: number;
+    person: "bride" | "groom";
+    image_url: string;
+    is_active: boolean;
+};
+
 export default function Hero() {
  const [bgUrl, setBgUrl] = useState<string>(DEFAULT_BG);
+ const [brideAvatar, setBrideAvatar] = useState<string>(DEFAULT_BRIDE_AVATAR);
+ const [groomAvatar, setGroomAvatar] = useState<string>(DEFAULT_GROOM_AVATAR);
 
     useEffect(() => {
         let cancelled = false;
@@ -159,7 +170,39 @@ export default function Hero() {
             }
         };
 
+        const loadAvatars = async () => {
+            try {
+                const res = await fetch("/api/avatars", {
+                    cache: "no-store",
+                });
+
+                if (!res.ok) return;
+
+                const data: unknown = await res.json();
+
+                if (!Array.isArray(data)) return;
+
+                for (const item of data as AvatarResponse[]) {
+                    if (cancelled) break;
+                    if (
+                        typeof item.image_url === "string" &&
+                        item.image_url.startsWith("https://")
+                    ) {
+                        if (item.person === "bride") {
+                            setBrideAvatar(item.image_url);
+                        } else if (item.person === "groom") {
+                            setGroomAvatar(item.image_url);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error("Failed to load avatars:", error);
+                // Giữ ảnh mặc định nếu API gặp lỗi.
+            }
+        };
+
         void loadActiveBackground();
+        void loadAvatars();
 
         return () => {
             cancelled = true;
@@ -227,7 +270,7 @@ export default function Hero() {
       <div className="w-full max-w-5xl mx-auto grid grid-cols-[1fr_auto_1fr] items-center gap-2 md:gap-10 relative z-10">
         <div className="flex justify-center md:justify-end">
           <AvatarMedallion
-            src="/images/avatar/Janes_avatar.jpg"
+            src={brideAvatar}
             name="Kiều Ngân"
             initial="N"
             side="left"
@@ -300,7 +343,7 @@ export default function Hero() {
 
         <div className="flex justify-center md:justify-start">
           <AvatarMedallion
-            src="/images/avatar/Henry_avatar.jpg"
+            src={groomAvatar}
             name="Văn Đạt"
             initial="Đ"
             side="right"

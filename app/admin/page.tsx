@@ -16,6 +16,7 @@ import {
     CheckCircle2,
     Star,
     X,
+    UserCircle2,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import { upload } from "@vercel/blob/client";
@@ -45,7 +46,16 @@ type Background = {
     created_at: string;
 };
 
-type Tab = "guests" | "memories" | "backgrounds";
+type Avatar = {
+    id: number;
+    person: "bride" | "groom";
+    image_url: string;
+    file_path: string;
+    is_active: boolean;
+    created_at: string;
+};
+
+type Tab = "guests" | "memories" | "backgrounds" | "avatars";
 
 export default function AdminPage() {
     const router = useRouter();
@@ -70,10 +80,20 @@ export default function AdminPage() {
     const [bgLabelInput, setBgLabelInput] = useState("");
     const bgFileRef = useRef<HTMLInputElement>(null);
 
+    // Avatars State
+    const [avatars, setAvatars] = useState<Avatar[]>([]);
+    const [loadingAvatars, setLoadingAvatars] = useState(true);
+    const [uploadingAvatar, setUploadingAvatar] = useState<"bride" | "groom" | null>(null);
+    const [deletingAvatarId, setDeletingAvatarId] = useState<number | null>(null);
+    const [settingAvatarActiveId, setSettingAvatarActiveId] = useState<number | null>(null);
+    const brideFileRef = useRef<HTMLInputElement>(null);
+    const groomFileRef = useRef<HTMLInputElement>(null);
+
     useEffect(() => {
         fetchGuests();
         fetchMemories();
         fetchBackgrounds();
+        fetchAvatars();
     }, []);
 
     /* ─── Guests ──────────────────────────────────────────────────────────── */
@@ -337,6 +357,124 @@ export default function AdminPage() {
         }
     };
 
+    /* ─── Avatars ──────────────────────────────────────────────────────────── */
+
+    const fetchAvatars = async () => {
+        try {
+            setLoadingAvatars(true);
+            const res = await fetch("/api/admin/avatars", { cache: "no-store" });
+            const data = await res.json().catch(() => null);
+            if (!res.ok) throw new Error(data?.error || "Không thể tải danh sách avatar.");
+            if (Array.isArray(data)) setAvatars(data);
+        } catch (error) {
+            console.error("Failed to fetch avatars:", error);
+        } finally {
+            setLoadingAvatars(false);
+        }
+    };
+
+    const handleAvatarUpload = async (
+        e: React.ChangeEvent<HTMLInputElement>,
+        person: "bride" | "groom"
+    ) => {
+        const input = e.currentTarget;
+        const file = input.files?.[0];
+        if (!file) return;
+
+        const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+        if (!allowedTypes.includes(file.type)) {
+            toast.error("Chỉ hỗ trợ ảnh JPG, PNG hoặc WebP.");
+            input.value = "";
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            toast.error("Ảnh không được vượt quá 5 MB.");
+            input.value = "";
+            return;
+        }
+
+        setUploadingAvatar(person);
+        const tid = toast.loading(`Đang tải lên avatar ${person === "bride" ? "cô dâu" : "chú rể"}...`);
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("person", person);
+
+        try {
+            const res = await fetch("/api/admin/avatars", {
+                method: "POST",
+                body: formData,
+                cache: "no-store",
+            });
+            const data = await res.json().catch(() => null);
+            if (!res.ok) throw new Error(data?.error || "Upload avatar thất bại.");
+
+            toast.update(tid, {
+                render: "Avatar đã được tải lên!",
+                type: "success",
+                isLoading: false,
+                autoClose: 3000,
+            });
+            await fetchAvatars();
+        } catch (error) {
+            toast.update(tid, {
+                render: error instanceof Error ? error.message : "Upload thất bại.",
+                type: "error",
+                isLoading: false,
+                autoClose: 4000,
+            });
+        } finally {
+            setUploadingAvatar(null);
+            input.value = "";
+        }
+    };
+
+    const handleSetAvatarActive = async (id: number) => {
+        setSettingAvatarActiveId(id);
+        try {
+            const res = await fetch("/api/admin/avatars", {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id }),
+            });
+            const data = await res.json().catch(() => null);
+            if (!res.ok) throw new Error(data?.error || "Không thể đặt avatar.");
+            setAvatars(prev =>
+                prev.map(av => ({
+                    ...av,
+                    is_active: av.id === id ? true : av.person === prev.find(a => a.id === id)?.person ? false : av.is_active,
+                }))
+            );
+            toast.success("Đã đặt làm avatar chính!");
+        } catch (error) {
+            toast.error(error instanceof Error ? error.message : "Lỗi mạng.");
+        } finally {
+            setSettingAvatarActiveId(null);
+        }
+    };
+
+    const handleDeleteAvatar = async (id: number) => {
+        if (!confirm("Xóa avatar này không?")) return;
+        setDeletingAvatarId(id);
+        const tid = toast.loading("Đang xóa...");
+        try {
+            const res = await fetch("/api/admin/avatars", {
+                method: "DELETE",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id }),
+            });
+            if (res.ok) {
+                toast.update(tid, { render: "Đã xóa avatar.", type: "success", isLoading: false, autoClose: 3000 });
+                await fetchAvatars();
+            } else {
+                toast.update(tid, { render: "Xóa thất bại.", type: "error", isLoading: false, autoClose: 3000 });
+            }
+        } catch {
+            toast.update(tid, { render: "Lỗi mạng.", type: "error", isLoading: false, autoClose: 3000 });
+        } finally {
+            setDeletingAvatarId(null);
+        }
+    };
+
     const logout = async () => {
         try { await fetch("/api/admin/login", { method: "DELETE" }); } catch { }
         router.push("/admin/login");
@@ -356,6 +494,7 @@ export default function AdminPage() {
         { id: "guests",      label: "Khách mời",  icon: <Users className="w-4 h-4" /> },
         { id: "memories",    label: "Ký ức",       icon: <ImageIcon className="w-4 h-4" /> },
         { id: "backgrounds", label: "Hình nền",    icon: <Layers className="w-4 h-4" /> },
+        { id: "avatars",     label: "Avatar",      icon: <UserCircle2 className="w-4 h-4" /> },
     ];
 
     return (
@@ -680,6 +819,168 @@ hình nền được lưu trong <strong>Neon PostgreSQL</strong>.
                                     </span>
                                 </div>
                             )}
+                        </div>
+                    )}
+
+                    {/* ── AVATARS TAB ── */}
+                    {activeTab === "avatars" && (
+                        <div>
+                            <div className="mb-8">
+                                <h2 className="text-lg font-medium text-neutral-900">Quản lý Avatar</h2>
+                                <p className="text-sm text-neutral-500 mt-1">
+                                    Upload và chọn ảnh avatar cho cô dâu &amp; chú rể. Ảnh được lưu trên <strong>Vercel Blob</strong>,
+                                    thông tin lưu trong <strong>Neon PostgreSQL</strong>.
+                                </p>
+                            </div>
+
+                            {loadingAvatars ? (
+                                <div className="py-20 flex justify-center items-center text-neutral-400">
+                                    <Loader2 className="w-8 h-8 animate-spin" />
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    {/* ── Bride Panel ── */}
+                                    {(["bride", "groom"] as const).map((person) => {
+                                        const personAvatars = avatars.filter(av => av.person === person);
+                                        const activeAvatar = personAvatars.find(av => av.is_active);
+                                        const isUploading = uploadingAvatar === person;
+                                        const fileRef = person === "bride" ? brideFileRef : groomFileRef;
+                                        const label = person === "bride" ? "Cô dâu" : "Chú rể";
+                                        const accentColor = person === "bride" ? "rose" : "blue";
+
+                                        return (
+                                            <div
+                                                key={person}
+                                                className="border border-neutral-200 rounded-2xl overflow-hidden shadow-sm"
+                                            >
+                                                {/* Panel header */}
+                                                <div className={`px-5 py-4 flex items-center justify-between border-b border-neutral-100 bg-${accentColor === "rose" ? "rose" : "blue"}-50`}>
+                                                    <div className="flex items-center gap-2">
+                                                        <UserCircle2 className={`w-5 h-5 text-${accentColor}-400`} />
+                                                        <span className="font-medium text-neutral-800">{label}</span>
+                                                        {activeAvatar && (
+                                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
+                                                                <Star className="w-3 h-3" /> Đã có avatar
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                    <label className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-white bg-stone-900 hover:bg-stone-800 rounded-lg cursor-pointer transition-colors ${isUploading ? "opacity-60 pointer-events-none" : ""}`}>
+                                                        {isUploading ? (
+                                                            <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Đang tải...</>
+                                                        ) : (
+                                                            <><UploadCloud className="w-3.5 h-3.5" /> Upload ảnh</>                                                        )}
+                                                        <input
+                                                            ref={fileRef}
+                                                            type="file"
+                                                            accept="image/jpeg,image/png,image/webp"
+                                                            className="hidden"
+                                                            onChange={(e) => handleAvatarUpload(e, person)}
+                                                            disabled={isUploading}
+                                                        />
+                                                    </label>
+                                                </div>
+
+                                                {/* Active avatar preview */}
+                                                <div className="p-5">
+                                                    {activeAvatar ? (
+                                                        <div className="mb-5 flex flex-col items-center gap-3">
+                                                            <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider self-start">Avatar đang dùng</p>
+                                                            <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-amber-300 shadow-lg shadow-amber-100">
+                                                                <Image
+                                                                    src={activeAvatar.image_url}
+                                                                    alt={`${label} avatar`}
+                                                                    fill
+                                                                    className="object-cover"
+                                                                    sizes="128px"
+                                                                />
+                                                            </div>
+                                                            <p className="text-xs text-neutral-400">
+                                                                {new Date(activeAvatar.created_at).toLocaleDateString("vi-VN", { year: "numeric", month: "short", day: "numeric" })}
+                                                            </p>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="mb-5 flex flex-col items-center gap-3 py-6 border-2 border-dashed border-neutral-200 rounded-xl bg-neutral-50">
+                                                            <UserCircle2 className="w-14 h-14 text-neutral-300" />
+                                                            <p className="text-sm text-neutral-500">Chưa có avatar. Upload ảnh để bắt đầu.</p>
+                                                        </div>
+                                                    )}
+
+                                                    {/* All uploaded avatars */}
+                                                    {personAvatars.length > 0 && (
+                                                        <div>
+                                                            <p className="text-xs font-medium text-neutral-500 uppercase tracking-wider mb-3">Tất cả ảnh đã upload ({personAvatars.length})</p>
+                                                            <div className="grid grid-cols-3 gap-3">
+                                                                {personAvatars.map((av) => (
+                                                                    <div
+                                                                        key={av.id}
+                                                                        className={`group relative rounded-xl overflow-hidden border-2 transition-all ${
+                                                                            av.is_active
+                                                                                ? "border-amber-400 shadow-md shadow-amber-100"
+                                                                                : "border-neutral-200 hover:border-neutral-300"
+                                                                        }`}
+                                                                    >
+                                                                        <div className="relative aspect-square">
+                                                                            <Image
+                                                                                src={av.image_url}
+                                                                                alt={`${label} avatar ${av.id}`}
+                                                                                fill
+                                                                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                                                                sizes="120px"
+                                                                            />
+                                                                            {av.is_active && (
+                                                                                <div className="absolute top-1.5 left-1.5 flex items-center gap-1 px-1.5 py-0.5 bg-amber-400 text-amber-900 text-[10px] font-semibold rounded-full">
+                                                                                    <Star className="w-2.5 h-2.5 fill-amber-900" />
+                                                                                    Dùng
+                                                                                </div>
+                                                                            )}
+                                                                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-end gap-1 p-1.5">
+                                                                                {!av.is_active && (
+                                                                                    <button
+                                                                                        onClick={() => handleSetAvatarActive(av.id)}
+                                                                                        disabled={settingAvatarActiveId === av.id}
+                                                                                        className="w-full flex items-center justify-center gap-1 py-1.5 bg-amber-400 hover:bg-amber-300 text-amber-900 text-[11px] font-semibold rounded-lg transition-colors"
+                                                                                    >
+                                                                                        {settingAvatarActiveId === av.id ? (
+                                                                                            <Loader2 className="w-3 h-3 animate-spin" />
+                                                                                        ) : (
+                                                                                            <><CheckCircle2 className="w-3 h-3" /> Dùng</>                                                                                        )}
+                                                                                    </button>
+                                                                                )}
+                                                                                <button
+                                                                                    onClick={() => handleDeleteAvatar(av.id)}
+                                                                                    disabled={deletingAvatarId === av.id}
+                                                                                    className="w-full flex items-center justify-center gap-1 py-1.5 bg-red-600 hover:bg-red-700 text-white text-[11px] font-medium rounded-lg transition-colors disabled:opacity-50"
+                                                                                >
+                                                                                    {deletingAvatarId === av.id ? (
+                                                                                        <Loader2 className="w-3 h-3 animate-spin" />
+                                                                                    ) : (
+                                                                                        <><X className="w-3 h-3" /> Xóa</>                                                                                    )}
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+
+                            {/* Info note */}
+                            <div className="mt-6 p-4 bg-blue-50 border border-blue-100 rounded-xl flex gap-3 items-start text-sm text-blue-700">
+                                <svg className="w-5 h-5 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                                </svg>
+                                <span>
+                                    File ảnh được lưu trên <strong>Vercel Blob</strong> (thư mục <code>avatars/bride/</code> và <code>avatars/groom/</code>).
+                                    Tên file &amp; URL được lưu trong bảng <code>avatars</code> của <strong>Neon PostgreSQL</strong>.
+                                    Trang chủ tự động load avatar đang active.
+                                </span>
+                            </div>
                         </div>
                     )}
 
