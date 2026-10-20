@@ -1,101 +1,98 @@
-
-import { put, del } from "@vercel/blob";
+import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
+import { del } from "@vercel/blob";
 import { sql } from "@vercel/postgres";
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 export const runtime = "nodejs";
 
-
-function isAdmin(req: NextRequest) {
-  const expected = process.env.ADMIN_SECRET;
-  const actual = req.cookies.get("admin_session")?.value;
-
-  return Boolean(expected && actual && actual === expected);
+// ─── Auth helper ─────────────────────────────────────────────────────────────
+async function isAdmin(): Promise<boolean> {
+    const cookieStore = await cookies();
+    const session = cookieStore.get("admin_session");
+    const expected = process.env.ADMIN_SECRET ?? "henry-janes-06122026";
+    return session?.value === expected;
 }
-
 
 function jsonError(message: string, status: number) {
-  return NextResponse.json({ error: message }, { status });
+    return NextResponse.json({ error: message }, { status });
 }
 
-// Upload image
-export async function POST(req: NextRequest) {
-  if (!isAdmin(req)) {
-    return jsonError("Unauthorized", 401);
-  }
+// ─── POST: Issue client-upload token (browser → Blob directly) ───────────────
+export async function POST(request: Request): Promise<NextResponse> {
+    const body = (await request.json()) as HandleUploadBody;
 
-  let uploadedUrl: string | undefined;
+    try {
+        const jsonResponse = await handleUpload({
+            body,
+            request,
+            onBeforeGenerateToken: async (pathname) => {
+                if (!(await isAdmin())) throw new Error("Unauthorized");
 
-  try {
-    const formData = await req.formData();
-    const file = formData.get("file");
-    const rawLabel = formData.get("label");
+                if (!pathname.startsWith("backgrounds/")) {
+                    throw new Error("Invalid upload path");
+                }
 
-    if (!(file instanceof File) || file.size === 0) {
-      return jsonError("Missing image file", 400);
+                return {
+                    allowedContentTypes: [
+                        "image/jpeg",
+                        "image/png",
+                        "image/webp",
+                    ],
+                };
+            },
+            onUploadCompleted: async ({ blob, tokenPayload }) => {
+                // Best-effort webhook save — client PUT is the reliable path
+                try {
+                    const { label } = JSON.parse(tokenPayload || "{}");
+                    const bgLabel = label || blob.pathname.split("/").pop() || blob.pathname;
+                    await sql`
+                        INSERT INTO backgrounds (label, file_path, image_url, is_active)
+                        VALUES (${bgLabel}, ${blob.pathname}, ${blob.url}, FALSE)
+                    `;
+                } catch (err) {
+                    console.error("onUploadCompleted backgrounds DB insert failed:", err);
+                }
+            },
+        });
+
+        return NextResponse.json(jsonResponse);
+    } catch (error) {
+        return jsonError((error as Error).message, 400);
     }
-
-    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-      return jsonError("Only JPEG, PNG, and WebP are allowed", 400);
-    }
-
-    if (file.size > 5 * 1024 * 1024) {
-      return jsonError("Maximum file size is 5 MB", 400);
-    }
-
-    const label =
-      typeof rawLabel === "string" && rawLabel.trim()
-        ? rawLabel.trim()
-        : file.name;
-
-    const ext =
-      file.type === "image/jpeg" ? "jpg" :
-      file.type === "image/png" ? "png" : "webp";
-
-    const pathname = `backgrounds/${crypto.randomUUID()}.${ext}`;
-
-    const blob = await put(pathname, file, {
-      access: "public",
-      addRandomSuffix: false,
-      contentType: file.type,
-    });
-
-    uploadedUrl = blob.url;
-
-    const result = await sql`
-      INSERT INTO backgrounds
-        (label, file_path, image_url, is_active)
-      VALUES
-        (${label}, ${blob.pathname}, ${blob.url}, FALSE)
-      RETURNING *
-    `;
-
-    return NextResponse.json(
-      { success: true, data: result.rows[0] },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error("Background upload failed:", error);
-
-    // Best-effort cleanup if the database insert failed.
-    if (uploadedUrl) {
-      try {
-        await del(uploadedUrl);
-      } catch (cleanupError) {
-        console.error("Blob cleanup failed:", cleanupError);
-      }
-    }
-
-    return jsonError("Upload failed", 500);
-  }
 }
 
-// Select one active background
+// ─── PUT: Client saves blob URL to DB after successful upload ─────────────────
+export async function PUT(request: NextRequest): Promise<NextResponse> {
+    if (!(await isAdmin())) return jsonError("Unauthorized", 401);
 
-export async function PATCH(req: NextRequest) {
-    if (!isAdmin(req)) {
-        return jsonError("Unauthorized", 401);
+    try {
+        const { url, pathname, label } = await request.json();
+
+        if (!url) return jsonError("Missing url", 400);
+
+        const filePath = pathname || url;
+        const bgLabel = label?.trim() || filePath.split("/").pop() || "background";
+
+        // Check for duplicates from webhook
+        const existing = await sql`SELECT id FROM backgrounds WHERE image_url = ${url} LIMIT 1`;
+        if (existing.rows.length === 0) {
+            await sql`
+                INSERT INTO backgrounds (label, file_path, image_url, is_active)
+                VALUES (${bgLabel}, ${filePath}, ${url}, FALSE)
+            `;
+        }
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("PUT /api/admin/backgrounds error:", error);
+        return jsonError("DB save failed", 500);
     }
+}
+
+// ─── PATCH: Activate a background ────────────────────────────────────────────
+export async function PATCH(req: NextRequest): Promise<NextResponse> {
+    if (!(await isAdmin())) return jsonError("Unauthorized", 401);
 
     try {
         const body = await req.json();
@@ -105,32 +102,15 @@ export async function PATCH(req: NextRequest) {
             return jsonError("Missing background id", 400);
         }
 
-        // Xác nhận ảnh tồn tại trước khi cập nhật.
-        const target = await sql`
-            SELECT id
-            FROM backgrounds
-            WHERE id = ${id}
-            LIMIT 1
-        `;
+        const target = await sql`SELECT id FROM backgrounds WHERE id = ${id} LIMIT 1`;
+        if (target.rows.length === 0) return jsonError("Background not found", 404);
 
-        if (target.rows.length === 0) {
-            return jsonError("Background not found", 404);
-        }
-
-        // Tắt ảnh đang hoạt động.
         await sql`
-            UPDATE backgrounds
-            SET is_active = FALSE,
-                updated_at = NOW()
-            WHERE is_active = TRUE
-              AND id <> ${id}
+            UPDATE backgrounds SET is_active = FALSE, updated_at = NOW()
+            WHERE is_active = TRUE AND id <> ${id}
         `;
-
-        // Bật ảnh được chọn.
         await sql`
-            UPDATE backgrounds
-            SET is_active = TRUE,
-                updated_at = NOW()
+            UPDATE backgrounds SET is_active = TRUE, updated_at = NOW()
             WHERE id = ${id}
         `;
 
@@ -141,45 +121,48 @@ export async function PATCH(req: NextRequest) {
     }
 }
 
-
-// Delete image
-export async function DELETE(req: NextRequest) {
-  if (!isAdmin(req)) {
-    return jsonError("Unauthorized", 401);
-  }
-
-  try {
-    const body = await req.json();
-    const id = body.id;
-
-    if (typeof id !== "string") {
-      return jsonError("Missing background id", 400);
-    }
-
-    const result = await sql`
-      DELETE FROM backgrounds
-      WHERE id = ${id}
-      RETURNING image_url
-    `;
-
-    if (result.rows.length === 0) {
-      return jsonError("Background not found", 404);
-    }
+// ─── DELETE: Remove a background ─────────────────────────────────────────────
+export async function DELETE(req: NextRequest): Promise<NextResponse> {
+    if (!(await isAdmin())) return jsonError("Unauthorized", 401);
 
     try {
-      await del(result.rows[0].image_url);
-    } catch (blobError) {
-      // DB record has already been removed; log for manual cleanup.
-      console.error("Could not delete Blob image:", blobError);
-      return NextResponse.json({
-        success: true,
-        warning: "Record deleted, but Blob cleanup failed",
-      });
-    }
+        const body = await req.json();
+        const id = body.id;
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Background deletion failed:", error);
-    return jsonError("Delete failed", 500);
-  }
+        if (typeof id !== "string") return jsonError("Missing background id", 400);
+
+        const result = await sql`DELETE FROM backgrounds WHERE id = ${id} RETURNING image_url`;
+        if (result.rows.length === 0) return jsonError("Background not found", 404);
+
+        try {
+            await del(result.rows[0].image_url);
+        } catch (blobErr) {
+            console.error("Blob cleanup failed:", blobErr);
+            return NextResponse.json({ success: true, warning: "Record deleted, Blob cleanup failed" });
+        }
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("Background deletion failed:", error);
+        return jsonError("Delete failed", 500);
+    }
+}
+
+// ─── GET: List all backgrounds ────────────────────────────────────────────────
+export async function GET(req: NextRequest): Promise<NextResponse> {
+    if (!(await isAdmin())) return jsonError("Unauthorized", 401);
+
+    try {
+        const result = await sql`
+            SELECT id, label, file_path, image_url, is_active, created_at
+            FROM backgrounds
+            ORDER BY created_at DESC
+        `;
+        return NextResponse.json(result.rows, {
+            headers: { "Cache-Control": "no-store" },
+        });
+    } catch (error) {
+        console.error("Failed to fetch backgrounds:", error);
+        return jsonError("Could not fetch backgrounds", 500);
+    }
 }

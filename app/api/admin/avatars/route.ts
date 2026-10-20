@@ -1,107 +1,104 @@
-
-import { put, del } from "@vercel/blob";
+import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
+import { del } from "@vercel/blob";
 import { sql } from "@vercel/postgres";
 import { NextRequest, NextResponse } from "next/server";
+import { cookies } from "next/headers";
 
 export const runtime = "nodejs";
 
-function isAdmin(req: NextRequest) {
-    const expected = process.env.ADMIN_SECRET;
-    const actual = req.cookies.get("admin_session")?.value;
-    return Boolean(expected && actual && actual === expected);
+// ─── Auth helper ─────────────────────────────────────────────────────────────
+async function isAdmin(): Promise<boolean> {
+    const cookieStore = await cookies();
+    const session = cookieStore.get("admin_session");
+    const expected = process.env.ADMIN_SECRET ?? "henry-janes-06122026";
+    return session?.value === expected;
 }
 
 function jsonError(message: string, status: number) {
     return NextResponse.json({ error: message }, { status });
 }
 
-/**
- * POST /api/admin/avatars
- * Upload ảnh avatar lên Vercel Blob, lưu record vào DB.
- * Body: multipart/form-data
- *   - file: File
- *   - person: "bride" | "groom"
- */
-export async function POST(req: NextRequest) {
-    if (!isAdmin(req)) {
-        return jsonError("Unauthorized", 401);
-    }
-
-    let uploadedUrl: string | undefined;
+// ─── POST: Issue client-upload token (browser → Blob directly) ───────────────
+export async function POST(request: Request): Promise<NextResponse> {
+    const body = (await request.json()) as HandleUploadBody;
 
     try {
-        const formData = await req.formData();
-        const file = formData.get("file");
-        const person = formData.get("person");
+        const jsonResponse = await handleUpload({
+            body,
+            request,
+            onBeforeGenerateToken: async (pathname) => {
+                if (!(await isAdmin())) throw new Error("Unauthorized");
 
-        if (!(file instanceof File) || file.size === 0) {
-            return jsonError("Missing image file", 400);
-        }
+                // Validate person from pathname prefix (avatars/bride/... or avatars/groom/...)
+                const person = pathname.startsWith("avatars/bride/") ? "bride"
+                    : pathname.startsWith("avatars/groom/") ? "groom"
+                    : null;
 
-        if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
-            return jsonError("Only JPEG, PNG, and WebP are allowed", 400);
-        }
+                if (!person) throw new Error("Invalid upload path");
 
-        if (file.size > 5 * 1024 * 1024) {
-            return jsonError("Maximum file size is 5 MB", 400);
-        }
-
-        if (person !== "bride" && person !== "groom") {
-            return jsonError("person must be 'bride' or 'groom'", 400);
-        }
-
-        const ext =
-            file.type === "image/jpeg" ? "jpg" :
-            file.type === "image/png"  ? "png" : "webp";
-
-        const pathname = `avatars/${person}/${crypto.randomUUID()}.${ext}`;
-
-        const blob = await put(pathname, file, {
-            access: "public",
-            addRandomSuffix: false,
-            contentType: file.type,
+                return {
+                    allowedContentTypes: [
+                        "image/jpeg",
+                        "image/png",
+                        "image/webp",
+                    ],
+                    tokenPayload: JSON.stringify({ person }),
+                };
+            },
+            onUploadCompleted: async ({ blob, tokenPayload }) => {
+                // Best-effort webhook save (may not always fire — client PUT is the reliable path)
+                try {
+                    const { person } = JSON.parse(tokenPayload || "{}");
+                    if (person) {
+                        await sql`
+                            INSERT INTO avatars (person, file_path, image_url, is_active)
+                            VALUES (${person}, ${blob.pathname}, ${blob.url}, FALSE)
+                        `;
+                    }
+                } catch (err) {
+                    console.error("onUploadCompleted avatar DB insert failed:", err);
+                }
+            },
         });
 
-        uploadedUrl = blob.url;
-
-        // Lưu vào DB (mặc định is_active = FALSE, cần PATCH để activate)
-        const result = await sql`
-            INSERT INTO avatars
-                (person, file_path, image_url, is_active)
-            VALUES
-                (${person}, ${blob.pathname}, ${blob.url}, FALSE)
-            RETURNING *
-        `;
-
-        return NextResponse.json(
-            { success: true, data: result.rows[0] },
-            { status: 201 }
-        );
+        return NextResponse.json(jsonResponse);
     } catch (error) {
-        console.error("Avatar upload failed:", error);
-
-        // Cleanup Blob nếu DB insert thất bại
-        if (uploadedUrl) {
-            try {
-                await del(uploadedUrl);
-            } catch (cleanupError) {
-                console.error("Blob cleanup failed:", cleanupError);
-            }
-        }
-
-        return jsonError("Upload failed", 500);
+        return jsonError((error as Error).message, 400);
     }
 }
 
-/**
- * PATCH /api/admin/avatars
- * Set một avatar là active (đồng thời deactivate các ảnh cùng person).
- * Body: { id: number }
- */
-export async function PATCH(req: NextRequest) {
-    if (!isAdmin(req)) {
-        return jsonError("Unauthorized", 401);
+// ─── PUT: Client saves blob URL to DB after successful upload ─────────────────
+export async function PUT(request: NextRequest): Promise<NextResponse> {
+    if (!(await isAdmin())) return jsonError("Unauthorized", 401);
+
+    try {
+        const { url, pathname, person } = await request.json();
+
+        if (!url || !person || (person !== "bride" && person !== "groom")) {
+            return jsonError("Missing url or invalid person", 400);
+        }
+
+        const filePath = pathname || url.split("/").pop() || url;
+
+        // Upsert: nếu webhook đã lưu rồi thì skip (dùng image_url để detect duplicate)
+        const existing = await sql`SELECT id FROM avatars WHERE image_url = ${url} LIMIT 1`;
+        if (existing.rows.length === 0) {
+            await sql`
+                INSERT INTO avatars (person, file_path, image_url, is_active)
+                VALUES (${person}, ${filePath}, ${url}, FALSE)
+            `;
+        }
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("PUT /api/admin/avatars error:", error);
+        return jsonError("DB save failed", 500);
     }
+}
+
+// ─── PATCH: Activate an avatar ────────────────────────────────────────────────
+export async function PATCH(req: NextRequest): Promise<NextResponse> {
+    if (!(await isAdmin())) return jsonError("Unauthorized", 401);
 
     try {
         const body = await req.json();
@@ -111,35 +108,17 @@ export async function PATCH(req: NextRequest) {
             return jsonError("Missing avatar id", 400);
         }
 
-        // Lấy person của avatar này
-        const target = await sql`
-            SELECT id, person
-            FROM avatars
-            WHERE id = ${id}
-            LIMIT 1
-        `;
-
-        if (target.rows.length === 0) {
-            return jsonError("Avatar not found", 404);
-        }
+        const target = await sql`SELECT id, person FROM avatars WHERE id = ${id} LIMIT 1`;
+        if (target.rows.length === 0) return jsonError("Avatar not found", 404);
 
         const person = target.rows[0].person;
 
-        // Deactivate tất cả avatar cùng person
         await sql`
-            UPDATE avatars
-            SET is_active = FALSE,
-                updated_at = NOW()
-            WHERE person = ${person}
-              AND is_active = TRUE
-              AND id <> ${id}
+            UPDATE avatars SET is_active = FALSE, updated_at = NOW()
+            WHERE person = ${person} AND is_active = TRUE AND id <> ${id}
         `;
-
-        // Activate avatar được chọn
         await sql`
-            UPDATE avatars
-            SET is_active = TRUE,
-                updated_at = NOW()
+            UPDATE avatars SET is_active = TRUE, updated_at = NOW()
             WHERE id = ${id}
         `;
 
@@ -150,15 +129,9 @@ export async function PATCH(req: NextRequest) {
     }
 }
 
-/**
- * DELETE /api/admin/avatars
- * Xóa avatar khỏi DB và Vercel Blob.
- * Body: { id: number }
- */
-export async function DELETE(req: NextRequest) {
-    if (!isAdmin(req)) {
-        return jsonError("Unauthorized", 401);
-    }
+// ─── DELETE: Remove an avatar ─────────────────────────────────────────────────
+export async function DELETE(req: NextRequest): Promise<NextResponse> {
+    if (!(await isAdmin())) return jsonError("Unauthorized", 401);
 
     try {
         const body = await req.json();
@@ -168,24 +141,14 @@ export async function DELETE(req: NextRequest) {
             return jsonError("Missing avatar id", 400);
         }
 
-        const result = await sql`
-            DELETE FROM avatars
-            WHERE id = ${id}
-            RETURNING image_url
-        `;
-
-        if (result.rows.length === 0) {
-            return jsonError("Avatar not found", 404);
-        }
+        const result = await sql`DELETE FROM avatars WHERE id = ${id} RETURNING image_url`;
+        if (result.rows.length === 0) return jsonError("Avatar not found", 404);
 
         try {
             await del(result.rows[0].image_url);
-        } catch (blobError) {
-            console.error("Could not delete Blob image:", blobError);
-            return NextResponse.json({
-                success: true,
-                warning: "Record deleted, but Blob cleanup failed",
-            });
+        } catch (blobErr) {
+            console.error("Blob cleanup failed:", blobErr);
+            return NextResponse.json({ success: true, warning: "Record deleted, Blob cleanup failed" });
         }
 
         return NextResponse.json({ success: true });
@@ -195,34 +158,21 @@ export async function DELETE(req: NextRequest) {
     }
 }
 
-/**
- * GET /api/admin/avatars
- * Lấy tất cả avatars (cả active và inactive) để hiển thị trong admin panel.
- */
-export async function GET(req: NextRequest) {
-    if (!isAdmin(req)) {
-        return jsonError("Unauthorized", 401);
-    }
+// ─── GET: List all avatars ────────────────────────────────────────────────────
+export async function GET(req: NextRequest): Promise<NextResponse> {
+    if (!(await isAdmin())) return jsonError("Unauthorized", 401);
 
     try {
         const result = await sql`
-            SELECT
-                id,
-                person,
-                image_url,
-                file_path,
-                is_active,
-                created_at,
-                updated_at
+            SELECT id, person, image_url, file_path, is_active, created_at, updated_at
             FROM avatars
             ORDER BY person ASC, created_at DESC
         `;
-
         return NextResponse.json(result.rows, {
             headers: { "Cache-Control": "no-store" },
         });
     } catch (error) {
-        console.error("Failed to fetch avatars (admin):", error);
+        console.error("Failed to fetch avatars:", error);
         return jsonError("Could not fetch avatars", 500);
     }
 }

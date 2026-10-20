@@ -248,32 +248,36 @@ export default function AdminPage() {
             return;
         }
 
-        if (file.size > 5 * 1024 * 1024) {
-            toast.error("Ảnh không được vượt quá 5 MB.");
-            input.value = "";
-            return;
-        }
-
         const label = bgLabelInput.trim() || file.name;
+
 
         setUploadingBg(true);
         const tid = toast.loading("Đang tải lên hình nền...");
 
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("label", label);
-
         try {
-            const res = await fetch("/api/admin/backgrounds", {
-                method: "POST",
-                body: formData,
-                cache: "no-store",
+            // 1. Upload trực tiếp browser → Vercel Blob (không giới hạn size)
+            const ext = file.type === "image/jpeg" ? "jpg" : file.type === "image/png" ? "png" : "webp";
+            const blobPathname = `backgrounds/${crypto.randomUUID()}.${ext}`;
+
+            const newBlob = await upload(blobPathname, file, {
+                access: "public",
+                handleUploadUrl: "/api/admin/backgrounds",
             });
 
-            const data = await res.json().catch(() => null);
+            // 2. Lưu URL + label vào Postgres qua PUT (reliable path)
+            const saveRes = await fetch("/api/admin/backgrounds", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    url: newBlob.url,
+                    pathname: newBlob.pathname,
+                    label,
+                }),
+            });
 
-            if (!res.ok) {
-                throw new Error(data?.error || "Upload hình nền thất bại.");
+            if (!saveRes.ok) {
+                const errData = await saveRes.json().catch(() => null);
+                throw new Error(errData?.error || "Lưu vào database thất bại.");
             }
 
             toast.update(tid, {
@@ -387,26 +391,35 @@ export default function AdminPage() {
             input.value = "";
             return;
         }
-        if (file.size > 5 * 1024 * 1024) {
-            toast.error("Ảnh không được vượt quá 5 MB.");
-            input.value = "";
-            return;
-        }
 
         setUploadingAvatar(person);
         const tid = toast.loading(`Đang tải lên avatar ${person === "bride" ? "cô dâu" : "chú rể"}...`);
-        const formData = new FormData();
-        formData.append("file", file);
-        formData.append("person", person);
 
         try {
-            const res = await fetch("/api/admin/avatars", {
-                method: "POST",
-                body: formData,
-                cache: "no-store",
+            // 1. Upload trực tiếp browser → Vercel Blob (không giới hạn size)
+            const ext = file.type === "image/jpeg" ? "jpg" : file.type === "image/png" ? "png" : "webp";
+            const blobPathname = `avatars/${person}/${crypto.randomUUID()}.${ext}`;
+
+            const newBlob = await upload(blobPathname, file, {
+                access: "public",
+                handleUploadUrl: "/api/admin/avatars",
             });
-            const data = await res.json().catch(() => null);
-            if (!res.ok) throw new Error(data?.error || "Upload avatar thất bại.");
+
+            // 2. Lưu URL vào Postgres qua PUT (reliable path)
+            const saveRes = await fetch("/api/admin/avatars", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    url: newBlob.url,
+                    pathname: newBlob.pathname,
+                    person,
+                }),
+            });
+
+            if (!saveRes.ok) {
+                const errData = await saveRes.json().catch(() => null);
+                throw new Error(errData?.error || "Lưu vào database thất bại.");
+            }
 
             toast.update(tid, {
                 render: "Avatar đã được tải lên!",
@@ -416,6 +429,7 @@ export default function AdminPage() {
             });
             await fetchAvatars();
         } catch (error) {
+            console.error("Avatar upload failed:", error);
             toast.update(tid, {
                 render: error instanceof Error ? error.message : "Upload thất bại.",
                 type: "error",
