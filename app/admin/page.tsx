@@ -18,6 +18,7 @@ import {
     X,
 } from "lucide-react";
 import { toast } from "react-toastify";
+import { upload } from "@vercel/blob/client";
 
 type WeddingForm = {
     id: string;
@@ -124,15 +125,19 @@ export default function AdminPage() {
         const file = e.target.files?.[0];
         if (!file) return;
         setIsUploading(true);
-        const formData = new FormData();
-        formData.append("file", file);
         try {
-            const res = await fetch("/api/admin/memories", { method: "POST", body: formData });
-            if (res.ok) { toast.success("Photo uploaded successfully!"); await fetchMemories(); }
-            else toast.error("Failed to upload photo.");
+            // Upload trực tiếp từ browser → Vercel Blob (bypass 4.5MB serverless limit)
+            await upload(file.name, file, {
+                access: "public",
+                handleUploadUrl: "/api/admin/memories",
+            });
+            toast.success("Photo uploaded successfully!");
+            // Delay nhỏ để webhook onUploadCompleted kịp lưu vào DB
+            await new Promise((r) => setTimeout(r, 800));
+            await fetchMemories();
         } catch (error) {
             console.error("Upload failed", error);
-            toast.error("Network error. Upload failed.");
+            toast.error("Upload failed. Please try again.");
         } finally {
             setIsUploading(false);
             e.target.value = "";
