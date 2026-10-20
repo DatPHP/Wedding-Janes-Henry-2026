@@ -4,9 +4,14 @@ import { sql } from "@vercel/postgres";
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-// ─── POST: Client-side upload token handler ───────────────────────────────────
-// File goes DIRECTLY from browser → Vercel Blob (bypasses serverless payload limit).
-// This route only issues a short-lived token and handles the completion webhook.
+// ─── Helper: check auth ───────────────────────────────────────────────────────
+async function isAuthorized(): Promise<boolean> {
+    const cookieStore = await cookies();
+    const session = cookieStore.get("admin_session");
+    return session?.value === "henry-janes-06122026";
+}
+
+// ─── POST: Issue client-upload token (file goes browser → Blob directly) ─────
 export async function POST(request: Request): Promise<NextResponse> {
     const body = (await request.json()) as HandleUploadBody;
 
@@ -14,14 +19,10 @@ export async function POST(request: Request): Promise<NextResponse> {
         const jsonResponse = await handleUpload({
             body,
             request,
-            onBeforeGenerateToken: async (pathname) => {
-                // Verify admin session cookie
-                const cookieStore = await cookies();
-                const session = cookieStore.get("admin_session");
-                if (!session || session.value !== "henry-janes-06122026") {
+            onBeforeGenerateToken: async (_pathname) => {
+                if (!(await isAuthorized())) {
                     throw new Error("Unauthorized");
                 }
-
                 return {
                     allowedContentTypes: [
                         "image/jpeg",
@@ -31,24 +32,19 @@ export async function POST(request: Request): Promise<NextResponse> {
                         "image/heic",
                         "image/heif",
                     ],
-                    // Pass the original filename via tokenPayload so the webhook can save it
-                    tokenPayload: JSON.stringify({ pathname }),
                 };
             },
-            onUploadCompleted: async ({ blob, tokenPayload }) => {
-                // This webhook fires after the direct upload finishes.
-                // Save the blob URL to Postgres here.
+            onUploadCompleted: async ({ blob }) => {
+                // Best-effort: also try to save from webhook (may not always fire locally)
                 try {
-                    const { pathname } = JSON.parse(tokenPayload || "{}");
-                    const imageName = pathname?.split("/").pop() || blob.pathname;
-
+                    const imageName = blob.pathname.split("/").pop() || blob.pathname;
                     await sql`
                         INSERT INTO memories (image_name, image_url)
                         VALUES (${imageName}, ${blob.url})
                     `;
                 } catch (err) {
-                    console.error("DB insert failed after upload:", err);
-                    throw new Error("Could not save to database");
+                    console.error("onUploadCompleted DB insert failed:", err);
+                    // Don't throw — client will save via PUT as fallback
                 }
             },
         });
@@ -62,8 +58,40 @@ export async function POST(request: Request): Promise<NextResponse> {
     }
 }
 
+// ─── PUT: Client saves blob URL to DB after successful upload ─────────────────
+// Called by the browser right after upload() resolves, as a reliable fallback.
+export async function PUT(request: Request): Promise<NextResponse> {
+    if (!(await isAuthorized())) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    try {
+        const { url, name } = await request.json();
+
+        if (!url) {
+            return NextResponse.json({ error: "Missing url" }, { status: 400 });
+        }
+
+        const imageName = name || url.split("/").pop() || "image";
+
+        await sql`
+            INSERT INTO memories (image_name, image_url)
+            VALUES (${imageName}, ${url})
+        `;
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        console.error("PUT /api/admin/memories error:", error);
+        return NextResponse.json({ error: "DB save failed" }, { status: 500 });
+    }
+}
+
 // ─── DELETE: Remove a memory ──────────────────────────────────────────────────
 export async function DELETE(req: Request) {
+    if (!(await isAuthorized())) {
+        return new Response("Unauthorized", { status: 401 });
+    }
+
     try {
         const body = await req.json();
         const { id, imageUrl } = body;
@@ -72,10 +100,8 @@ export async function DELETE(req: Request) {
             return new Response("Missing id or imageUrl", { status: 400 });
         }
 
-        // 1. Delete from Vercel Blob
         await del(imageUrl);
 
-        // 2. Delete from Postgres
         await sql`
             DELETE FROM memories WHERE id = ${id}
         `;

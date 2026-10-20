@@ -126,14 +126,24 @@ export default function AdminPage() {
         if (!file) return;
         setIsUploading(true);
         try {
-            // Upload trực tiếp từ browser → Vercel Blob (bypass 4.5MB serverless limit)
-            await upload(file.name, file, {
+            // 1. Upload trực tiếp từ browser → Vercel Blob (bypass 4.5MB serverless limit)
+            const newBlob = await upload(file.name, file, {
                 access: "public",
                 handleUploadUrl: "/api/admin/memories",
             });
+
+            // 2. Lưu URL vào DB qua PUT (đáng tin cậy hơn onUploadCompleted webhook)
+            const saveRes = await fetch("/api/admin/memories", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ url: newBlob.url, name: file.name }),
+            });
+
+            if (!saveRes.ok) {
+                console.warn("PUT save failed, webhook may have handled it");
+            }
+
             toast.success("Photo uploaded successfully!");
-            // Delay nhỏ để webhook onUploadCompleted kịp lưu vào DB
-            await new Promise((r) => setTimeout(r, 800));
             await fetchMemories();
         } catch (error) {
             console.error("Upload failed", error);
