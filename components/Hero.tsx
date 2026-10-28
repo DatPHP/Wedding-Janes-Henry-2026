@@ -358,7 +358,7 @@ export default function Hero() {
         initial={{ opacity: 0, y: 32 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, delay: 1.1, ease: "easeOut" }}
-        className="relative z-10 mt-10 md:mt-14 w-full max-w-lg mx-auto"
+        className="relative z-10 mt-10 md:mt-14 w-full max-w-lg md:max-w-[80vw] md:w-[80vw] mx-auto"
       >
         <div
           className="rounded-[40px] overflow-hidden relative group"
@@ -371,9 +371,10 @@ export default function Hero() {
           <Image
             src={bgUrl}
             alt="Kiều Ngân & Văn Đạt — Together"
-            width={800}
+            width={1600}
             height={1000}
-            className="w-full object-cover object-center"
+            className="w-full h-auto object-cover object-center"
+            sizes="(max-width: 768px) 100vw, 80vw"
             priority
           />
         </div>
